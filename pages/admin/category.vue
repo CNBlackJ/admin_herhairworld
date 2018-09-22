@@ -1,7 +1,7 @@
 <template>
 	<div class="category-container">
 		<el-row>
-			<el-col :lg="12" :xl="8">
+			<el-col :span="16">
 				<el-card>
 					<div slot="header">
 						<span>分类名称</span>
@@ -31,6 +31,13 @@
 							:data="categories"
 							stripe
 							style="width: 100%">
+							<el-table-column
+								label="图片"
+								width="180">
+								<template slot-scope="scope">
+									<img class="category-img" :src="scope.row.img">
+								</template>
+							</el-table-column>
 							<el-table-column
 								sortable
 								prop="name"
@@ -81,16 +88,12 @@
 				categories: []
 			}
 		},
-		created () {
-			this.listCategory()
+		async created () {
+			await this.listCategory()
 		},
 		methods: {
-			listCategory () {
-				category.list({}).then(resp => {
-					this.categories = resp.data
-				}).catch(err => {
-					console.log(`listCategory: ${JSON.stringify(err)}`)
-				})
+			async listCategory () {
+				this.categories = await category.list({})
 			},
 			createCategory () {
 				category.create({ category: this.categoryObj }).then(async resp => {
@@ -130,5 +133,10 @@
 	.category-container {
 		width: 100%;
 		padding: 20px 20px;
+	}
+
+	.category-img {
+		width: 50px;
+		height: 50px;
 	}
 </style>

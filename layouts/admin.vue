@@ -67,7 +67,7 @@ a {
 
 .navbar {
 	width: 100%;
-	padding-bottom: 30px;
+	padding-bottom: 10px;
 }
 
 .main-body {

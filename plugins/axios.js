@@ -16,9 +16,9 @@ export default ({ app, store, redirect }) => {
   axios.interceptors.request.use(req => {
     let authToken = ''
     if (typeof document === 'object') {
-      authToken = getCookieInClient('auth_token')
+      authToken = getCookieInClient('adminToken')
     } else {
-      authToken = store.state.authToken
+      authToken = store.state.adminToken
     }
     if (authToken) {
       req.headers.Authorization = `Bearer ${authToken}`

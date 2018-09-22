@@ -76,7 +76,12 @@
 				return `${row.minWeight} - ${row.maxWeight}`
 			},
 			formatLen (row, column) {
-				return `${row.minLen} - ${row.maxLen}`
+				if (row.lengths.length) {
+					const allLengths = [...row.lengths].map(ele => ele.len).sort()
+					return `${allLengths[0]} - ${allLengths.pop()}`
+				} else {
+					return `${row.minLen} - ${row.maxLen}`
+				}
 			},
 			formatCategory (row, column) {
 				return row.categories.map((cat, i) => `${i === 0 ? '' : '、'}${cat.name}`)

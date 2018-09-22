@@ -8,13 +8,13 @@
 				v-for="sidebar in adminSidebars"
 				:key="sidebar.index"
 				class="sidebar-btn"
-				@click="sidebarClick(sidebar.index)"
+				@click="sidebarClick(sidebar)"
 				:class="{'sidebar-selected': sidebar.index === selectedSidebar}"
 			>
 				<i class="sidebar-icon" :class="sidebar.icon"></i>
-				<router-link :to="sidebar.url">
-          {{ sidebar.text }}
-        </router-link>
+				<span>
+					{{ sidebar.text }}
+				</span>
 			</div>
 		</div>
 	</div>
@@ -40,11 +40,12 @@
 		},
 		created(){
 			const currentSidebar = this.adminSidebars.find(ele => ele.url === this.$route.path)
-			this.sidebarClick(currentSidebar.index)
+			this.sidebarClick(currentSidebar)
 		},
 		methods: {
-			sidebarClick (i) {
-				this.selectedSidebar = i
+			sidebarClick (sidebar) {
+				this.selectedSidebar = sidebar.index
+				this.$router.push({ path: sidebar.url })
 			}
 		}
 	}
