@@ -20,7 +20,9 @@
 										v-for="item in pageConfig.index.banner"
 										:key="item._id"
 										:span="6">
-										<div class="setting-slide-img-con">
+										<div
+											@click="changeBannerImg(item._id)"
+											class="setting-slide-img-con">
 											<img
 												class="setting-slide-img"
 												:src="item.img">
@@ -42,24 +44,86 @@
 									v-for="service in pageConfig.index.services"
 									:key="service._id"
 									:span="6">
-									<div class="setting-service-text">
-										<span>{{service.description}}</span>
-									</div>
-									<div class="setting-service-img">
-										<el-row v-if="service.index === 1">
-											<el-col
-												v-for="(item, i) in pageConfig.index.services[0].img"
-												:key="i"
-												:span="12">
-												<img
-													style="padding: 3px"
-													:src="item">
-											</el-col>
-										</el-row>
-										<img
-											v-else 
-											:src="service.img[0]">
-									</div>
+									<el-row>
+										<div class="setting-service-img">
+											<el-row v-if="service.index === 1">
+												<el-col
+													v-for="(item, i) in pageConfig.index.services[0].img"
+													:key="i"
+													:span="12">
+													<div class="service1-img-con">
+														<img class="service1-img" :src="item">
+													</div>
+												</el-col>
+											</el-row>
+											<img
+												v-else 
+												:src="service.img[0]">
+										</div>
+									</el-row>
+									<el-row>
+										<div class="setting-service-text">
+											<el-form v-if="editServiceId === service._id" :inline="true">
+												<el-form-item
+													size="small"
+													label="标题">
+													<el-input v-model="serviceTitle" type="text"></el-input>
+												</el-form-item>
+												<el-form-item
+													label="描述">
+													<el-input
+														:rows="4"
+														v-model="serviceDescription"
+														type="textarea">
+													</el-input>
+												</el-form-item>
+												<el-form-item>
+													<el-button
+														@click='editServiceId = null '
+														size="small">
+														取消
+													</el-button>
+													<el-button
+														@click="updateService(service._id)"
+														size="small">
+														更新
+													</el-button>
+												</el-form-item>
+											</el-form>
+											<div v-else>
+												<div class="setting-service-title">
+														{{service.title}}
+												</div>
+												<span>
+													{{service.description}}
+												</span>
+											</div>
+										</div>
+									</el-row>
+									<el-row>
+										<div
+											v-show="editServiceId !== service._id"
+											class="setting-service-btns">
+											<el-button
+												@click="editService(service._id)"
+												size="small">
+												编辑
+											</el-button>
+											<el-button
+												v-if="service.isHide"
+												@click="showService(service._id)"
+												size="small">
+											  展示
+											</el-button>
+											<el-button
+												v-else
+												@click="hideService(service._id)"
+												size="small"
+												type="danger">
+												隐藏
+											</el-button>
+										</div>
+									</el-row>
 								</el-col>
 							</el-row>
 						</el-card>
@@ -80,70 +144,86 @@
 				</div>
 			</el-card>
 		</el-row>
+
+		<no-ssr>
+			<uploadDialog
+				:showDialog='showDialog'></uploadDialog>
+		</no-ssr>
 	</div>
 </template>
 
 <script>
 	import { mapState } from 'vuex'
+	import _ from 'lodash'
 
-	import pageConfig from '@/apis/pageConfig'
+	import uploadDialog from '@/components/uploadDialog'
+	import pageConfigApi from '@/apis/pageConfig'
 
 	export default {
 		layout: 'admin',
+		components: {
+			uploadDialog
+		},
 		computed: mapState({
 			pageConfig: state => state.page.pageConfig
 		}),
+		data () {
+			return {
+				pageConfigForm: {
+					index: {
+						banner: [],
+						services: []
+					}
+				},
+				showDialog: false,
+				editServiceId: '',
+				serviceDescription: '',
+				serviceTitle: ''
+			}
+		},
 		created () {
-			this.$store.dispatch('page/setPageConfig')
+			this.$store.dispatch('page/setPageConfig')	
 		},
 		methods: {
-			async createPageConfig () {
-				const bannerImg = 'https://herhairword-1255936829.cos.ap-guangzhou.myqcloud.com/banner.jpg'
-				const bsImg = 'https://herhairword-1255936829.cos.ap-guangzhou.myqcloud.com/business_1.jpg'
-				const page = {
-					index: {
-						banner: [
-							{ img: bannerImg, path: 'path: 1' },
-							{ img: bannerImg, path: 'path: 2' },
-							{ img: bannerImg, path: 'path: 3' },
-							{ img: bannerImg, path: 'path: 4' }
-						],
-						services: [
-							{
-								title: 'business solution',
-								description: 'Growing your business is our target and we provide solutions to make you successful!',
-								img: [ bsImg, bsImg, bsImg, bsImg ],
-								index: 1
-							},
-							{ 
-								title: 'factory direct price',
-								description: 'Lowest factory direct prices with Premuim quality product help makebig profit',
-								img: [ 'https://herhairword-1255936829.cos.ap-guangzhou.myqcloud.com/plant.jpg' ],
-								index: 2
-							},
-							{ 
-								title: 'secret of hair market',
-								description: 'Are you still buying the hair as Brazilian Hair? 12A Grade? More secret of hair market are waiting for you!!',
-								img: [ 'https://herhairword-1255936829.cos.ap-guangzhou.myqcloud.com/market.jpg' ],
-								index: 3
-							},
-							{ 
-								title: 'hair branding',
-								description: 'Are you still buying the hair as Brazilian Hair? 12A Grade? More secret of hair market are waiting for you!!',
-								img: [ 'https://herhairword-1255936829.cos.ap-guangzhou.myqcloud.com/branding.jpg' ],
-								index: 4
-							}
-						]
-					},
-					detail: [
-						{ index: 1, title: 'Product' },
-						{ index: 2, title: 'Wholesale' },
-						{ index: 3, title: 'Shipping' },
-						{ index: 4, title: 'FAQ' }
-					]
-				}
-				const resp = await pageConfig.create(page)
-				console.log(resp)
+			async changeBannerImg (imgId) {
+				console.log(imgId)
+				this.$store.commit('uploadDialog/SET_IS_SHOW')
+				this.showDialog = true
+			},
+			async editService (serviceId) {
+				const services = this.pageConfig.index.services
+				const service = _.find(services, service => service._id === serviceId)
+				this.serviceDescription = service.description
+				this.serviceTitle = service.title
+				this.editServiceId = serviceId
+			},
+			async hideService (serviceId) {
+				const pageConfig = JSON.parse(JSON.stringify(this.pageConfig))
+				pageConfig.index.services.map(ele => {
+					if (ele._id === serviceId) ele.isHide = true
+					return ele
+				})
+				this.$store.dispatch('page/updatePageConfig', pageConfig)
+			},
+			async showService (serviceId) {
+				const pageConfig = JSON.parse(JSON.stringify(this.pageConfig))
+				pageConfig.index.services.map(ele => {
+					if (ele._id === serviceId) ele.isHide = false
+					return ele
+				})
+				this.$store.dispatch('page/updatePageConfig', pageConfig)
+			},
+			async updateService (serviceId) {
+				const pageConfig = JSON.parse(JSON.stringify(this.pageConfig))
+				pageConfig.index.services.map(ele => {
+					if (ele._id === serviceId) {
+						ele.title = this.serviceTitle
+						ele.description = this.serviceDescription
+					}
+					return ele
+				})
+				this.$store.dispatch('page/updatePageConfig', pageConfig)
+				this.editServiceId = null
 			}
 		}
 	}
@@ -169,10 +249,15 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		height: 190px;
 	}
 
 	.setting-service-con {
 		margin-top: 10px;
+	}
+
+	.setting-service-card .el-card__body {
+		padding-top: 0px;
 	}
 
 	.setting-service-card img {
@@ -188,7 +273,30 @@
 
 	.setting-service-text {
 		font-size: 12px;
-		padding: 12px 0;
 		text-align: center;
+		height: 100px;
+	}
+
+	.setting-service-title {
+		font-size: 18px;
+		padding-bottom: 10px;
+	}
+
+	.setting-service-btns {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: center;
+		padding-bottom: 10px;
+		padding-right: 20px;
+	}
+
+	.service1-img-con {
+		width: 80px;
+		height: 80px;
+	}
+	
+	.service1-img {
+		padding: 3px
 	}
 </style>
