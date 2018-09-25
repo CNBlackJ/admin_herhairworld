@@ -8,10 +8,10 @@
 			<div class="upload-dialog-img-con">
 				<el-upload
 					class="avatar-uploader"
-					action="https://jsonplaceholder.typicode.com/posts/"
+					action="http://localhost:3010/api/qiniu/upload"
 					:show-file-list="false"
-					:on-success="handleAvatarSuccess"
-					:before-upload="beforeAvatarUpload">
+					:on-success="handleImgSuccess"
+					:before-upload="beforeImgUpload">
 					<img v-if="imageUrl" :src="imageUrl" class="avatar">
 					<i v-else class="el-icon-plus avatar-uploader-icon"></i>
 				</el-upload>
@@ -28,13 +28,12 @@
 	import { mapState } from 'vuex'
 
 	export default {
-		props: [
-			'showDialog'
-		],
 		computed: {
 			...mapState({
+				isShow: state => state.uploadDialog.isShow,
 				imgUrl: state => state.uploadDialog.imgUrl,
-				isShow: state => state.uploadDialog.isShow
+				pageConfig: state => state.page.pageConfig,
+				changeOptions: state => state.page.changeOptions
 			})
 		},
 		data() {
@@ -44,20 +43,39 @@
 		},
 		methods: {
 			cancel () {
-				console.log('cancel')
 				this.$store.commit('uploadDialog/SET_IS_SHOW')
 			},
 			confirm () {
-				console.log('confirm')
+				const pageConfig = JSON.parse(JSON.stringify(this.pageConfig))
+				const { position, _id } = this.changeOptions
+				if (position.toLowerCase() === 'banner') {
+					pageConfig.index.banner.map(ele => {
+						if (ele._id === _id)  ele.img = this.imgUrl
+						return ele
+					})
+				} else if (position.toLowerCase() === 'service') {
+					const { imgUrl } = this.changeOptions
+					pageConfig.index.services.map(ele => {
+						if (ele._id === _id) {
+							ele.img[ele.img.indexOf(imgUrl)] = this.imgUrl
+						}
+						return ele
+					})
+				}
+				this.$store.dispatch('page/updatePageConfig', pageConfig)
 				this.$store.commit('uploadDialog/SET_IS_SHOW')
+				this.imageUrl = ''
 			},
 			handleClose () {
 				this.$store.commit('uploadDialog/SET_IS_SHOW')
 			},
-      handleAvatarSuccess(res, file) {
-        this.imageUrl = URL.createObjectURL(file.raw);
+      handleImgSuccess(res, file) {
+				this.imageUrl = res.data[0]
+				if (this.imageUrl) {
+					this.$store.dispatch('uploadDialog/setImgUrl', this.imageUrl)
+				}
       },
-      beforeAvatarUpload(file) {
+      beforeImgUpload(file) {
         const isJPG = file.type === 'image/jpeg';
         const isLt2M = file.size / 1024 / 1024 < 2;
 

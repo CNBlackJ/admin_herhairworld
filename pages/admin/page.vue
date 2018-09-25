@@ -51,13 +51,16 @@
 													v-for="(item, i) in pageConfig.index.services[0].img"
 													:key="i"
 													:span="12">
-													<div class="service1-img-con">
+													<div
+														@click="chengeServiceImg(service._id, item)"
+														class="service1-img-con">
 														<img class="service1-img" :src="item">
 													</div>
 												</el-col>
 											</el-row>
 											<img
 												v-else 
+												@click="chengeServiceImg(service._id, service.img[0])"
 												:src="service.img[0]">
 										</div>
 									</el-row>
@@ -146,8 +149,7 @@
 		</el-row>
 
 		<no-ssr>
-			<uploadDialog
-				:showDialog='showDialog'></uploadDialog>
+			<uploadDialog></uploadDialog>
 		</no-ssr>
 	</div>
 </template>
@@ -175,7 +177,6 @@
 						services: []
 					}
 				},
-				showDialog: false,
 				editServiceId: '',
 				serviceDescription: '',
 				serviceTitle: ''
@@ -186,9 +187,21 @@
 		},
 		methods: {
 			async changeBannerImg (imgId) {
-				console.log(imgId)
 				this.$store.commit('uploadDialog/SET_IS_SHOW')
-				this.showDialog = true
+				const changeOptions = {
+					position: 'banner',
+					_id: imgId
+				}
+				this.$store.dispatch('page/setChangeOptions', changeOptions)
+			},
+			async chengeServiceImg (imgId, imgUrl) {
+				this.$store.commit('uploadDialog/SET_IS_SHOW')
+				const changeOptions = {
+					position: 'service',
+					_id: imgId,
+					imgUrl
+				}
+				this.$store.dispatch('page/setChangeOptions', changeOptions)
 			},
 			async editService (serviceId) {
 				const services = this.pageConfig.index.services

@@ -1,7 +1,8 @@
+// import pageConfig from '@/apis/pageConfig'
 
 export const state = () => ({
-  imgUrl: '',
-  isShow: false
+  isShow: false,
+  imgUrl: ''
 })
 
 export const mutations = {
@@ -14,7 +15,7 @@ export const mutations = {
 }
 
 export const actions = {
-  setImgUrl ({ commit }, imgUrl) {
+  async setImgUrl ({ commit }, imgUrl) {
     commit('SET_IMG_URL', imgUrl)
   }
 }
