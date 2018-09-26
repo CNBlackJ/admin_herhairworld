@@ -21,4 +21,11 @@ export default class user {
     if (!resp.error_code) user = resp.data
     return user
   }
+
+  static async authWithToken (adminToken) {
+    const resp = (await request.post('/api/adminUsers/authWithToken', { adminToken })).data
+    let user = null
+    if (!resp.error_code) user = resp.data
+    return user
+  }
 }

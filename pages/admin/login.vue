@@ -46,10 +46,10 @@
 			...mapGetters(['isAuthenticated'])
 		},
 		methods: {
-			adminLogin () {
+			async adminLogin () {
 				const { username, password } = this.adminLoginForm
-				this.$store.dispatch('login', this.adminLoginForm)
-				if (this.$store.getters['isAuthenticated']) {
+				await this.$store.dispatch('login', this.adminLoginForm)
+				if (this.isAuthenticated) {
 					this.$router.push('/admin')
 				} else {
 					alert('用户名或密码错误')

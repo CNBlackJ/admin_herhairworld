@@ -47,6 +47,19 @@ export const getUserFromLocalStorage = () => {
   return json ? JSON.parse(json) : undefined
 }
 
+export const getUserJwtFromCookie = (req) => {
+  if (!req.headers.cookie) return
+  const jwtCookie = req.headers.cookie.split(';').find(c => c.trim().startsWith('adminToken='))
+  if (!jwtCookie) return
+  const jwt = jwtCookie.split('=')[1]
+  return jwt
+}
+
+export const getUserJwtFromLocalStorage = () => {
+  const adminToken = window.localStorage.adminToken
+  return adminToken
+}
+
 export const setSecret = (secret) => window.localStorage.setItem('secret', secret)
 
 export const checkSecret = (secret) => window.localStorage.secret === secret

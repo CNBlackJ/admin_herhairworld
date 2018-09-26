@@ -1,4 +1,5 @@
 import adminUser from '@/apis/adminUser'
+import LS from '@/apis/localStorage'
 
 export const state = () => ({
   user: null
@@ -17,14 +18,17 @@ export const actions = {
   loggedUser (state) {
     return state.user
   },
-  async login (c, user) {
-    const { commit } = c
+  async login ({ commit }, user) {
     const loggedUser = await adminUser.login(user)
     if (loggedUser) {
       commit('SET_USER', loggedUser)
-      // LS.setVal('adminToken', loggedUser.authToken)
+      LS.setVal('adminToken', loggedUser.authToken)
       this.$cookies.set('adminToken', loggedUser.authToken)
     }
+  },
+  async loginWithToken ({ commit }, adminToken) {
+    const loggedUser = await adminUser.authWithToken(adminToken)
+    commit('SET_USER', loggedUser)
   }
 }
 
