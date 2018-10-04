@@ -284,7 +284,9 @@
 				if (this.isEdit) this.prod = await product.getById(this.prodId)
 			},
       removeLenPrice(_id) {
-        _.remove(this.prod.lengths, ele => ele._id === _id)
+				const lengths = [...this.prod.lengths]
+				_.remove(lengths, ele => ele._id === _id)
+				this.prod.lengths = lengths
       },
       showInput() {
         this.priceLenVisible = true
