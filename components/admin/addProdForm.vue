@@ -67,15 +67,14 @@
 
 			<el-row>
 				<el-col :span="24">
-					<el-form-item label="类别" prop="categories">
-						<el-checkbox-group v-model="prod.categories">
-							<el-checkbox
-								v-for="category in categories"
-								:key="category._id"
-								:checked="prod.categories.map(e => e._id).indexOf(category._id) > -1"
-								:label="category.name">
-							</el-checkbox>
-						</el-checkbox-group>
+					<el-form-item label="类别" prop="category">
+						<el-radio
+							v-for="category in categories"
+							:key="category._id"
+							v-model="prod.category"
+							:label="category._id">
+							{{category.name}}
+						</el-radio>
 					</el-form-item>
 				</el-col>
 			</el-row>
@@ -201,7 +200,7 @@
 
 	import product from '@/apis/product'
 	import category from '@/apis/category'
-	
+
 	export default {
 		props: [
 			'isEdit',
@@ -209,10 +208,10 @@
 		],
 		data() {
 			return {
+				categories: [],
         priceLenVisible: false,
 				price: 0,
 				length: 0,
-				categories: [],
 				prod: {
 					model: `test model name ${new Date()}`,
 					name: `test product name ${new Date()}`,
@@ -224,7 +223,7 @@
 					price: 99,
 					color: 'Natural Color',
 					mainImg: '',
-					categories: [],
+					category: '',
 					imgs: [],
 					minWeight: 90,
 					maxWeight: 110,
@@ -270,17 +269,20 @@
 					mainImgs: [
 						{ required: true, message: '请上传封面图片', trigger: 'change' }
 					],
-					categories: [
-						{ type: 'array', required: true, message: '请至少选择一个类别', trigger: 'change' }
+					category: [
+						{ required: true, message: '请至少选择一个类别', trigger: 'change' }
 					]
 				}
 			};
 		},
 		async created () {
-			if (this.isEdit) this.prod = await product.getById(this.prodId)
+			await this.getProd()
 			this.categories = await category.list({})
 		},
 		methods: {
+			async getProd () {
+				if (this.isEdit) this.prod = await product.getById(this.prodId)
+			},
       removeLenPrice(_id) {
         _.remove(this.prod.lengths, ele => ele._id === _id)
       },
@@ -306,16 +308,16 @@
 					if (valid) {
 						// 更新图片字段
 						this.prod.imgs = this.prod.imgs.map(img => { return { name: img.name, url: img.url } })
-						// 更新分类字段为ObjectId
-						const objIdCat = []
-						this.categories.forEach(category => {
-							if (this.prod.categories.indexOf(category.name) > -1) objIdCat.push(category._id)
-						})
-						this.prod.categories = objIdCat
+						console.log(this.prod)
 						await product.create(this.prod)
 						this.$emit('closeAddProdForm')
+						this.$message({
+							message: '新增产品成功',
+							type: 'success'
+						});
+						await this.$store.dispatch('product/listProducts')
 					} else {
-						console.log('error submit!!');
+						console.log('error submit!!')
 						return false;
 					}
 				})
@@ -340,13 +342,12 @@
 						this.prod.imgs = this.prod.imgs.map(img => {
 							return { name: img.name, url: img.url }
 						})
-						// 更新分类字段为ObjectId
-						const objIdCat = []
-						this.categories.forEach(category => {
-							if (this.prod.categories.indexOf(category.name) > -1) objIdCat.push(category._id)
-						})
-						this.prod.categories = objIdCat
 						await product.update({ prod: this.prod })
+						this.$message({
+							message: '更新产品成功',
+							type: 'success'
+						});
+						await this.$store.dispatch('product/listProducts')
 					} else {
 						return false;
 					}

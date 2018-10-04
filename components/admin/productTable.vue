@@ -1,11 +1,14 @@
 <template>
 	<div class="table-container">
 		<el-table
-			:data="productList"
+			:data="products"
 			style="width: 100%">
 			<el-table-column type="expand">
 				<template slot-scope="props">
-					<addProdForm :isEdit=true :prodId="props.row._id"></addProdForm>
+					<addProdForm
+						:isEdit=true
+						:prodId="props.row._id"
+						:categories="categories"></addProdForm>
 				</template>
 			</el-table-column>
 			<el-table-column
@@ -56,20 +59,28 @@
 </template>
 
 <script>
+	import { mapState } from 'vuex'
+
 	import product from '@/apis/product'
+	import category from '@/apis/category'
+
 	import addProdForm from '@/components/admin/addProdForm'
 
 	export default {
 		components: {
 			addProdForm
 		},
+		computed: mapState({
+			products: state => state.product.products
+		}),
 		data() {
 			return {
-				productList: []
+				categories: []
 			}
 		},
 		async created () {
-			this.productList = await product.list({})
+			await this.$store.dispatch('product/listProducts')
+			this.categories = await category.list({})
 		},
 		methods: {
 			formatWeight (row, column) {
@@ -80,11 +91,11 @@
 					const allLengths = [...row.lengths].map(ele => ele.len).sort()
 					return `${allLengths[0]} - ${allLengths.pop()}`
 				} else {
-					return `${row.minLen} - ${row.maxLen}`
+					return ''
 				}
 			},
 			formatCategory (row, column) {
-				return row.categories.map((cat, i) => `${i === 0 ? '' : '、'}${cat.name}`)
+				return row.category.name
 			}
 		}
 	}
