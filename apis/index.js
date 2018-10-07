@@ -6,6 +6,7 @@ import favorite from './favorite'
 import localStorage from './localStorage'
 import address from './address'
 import pageConfig from './pageConfig'
+import order from './order'
 
 export default {
   product,
@@ -15,5 +16,6 @@ export default {
   favorite,
   localStorage,
   address,
-  pageConfig
+  pageConfig,
+  order
 }
