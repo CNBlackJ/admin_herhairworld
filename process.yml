@@ -1,0 +1,11 @@
+apps:
+- script   : npm
+  name     : 'admin_herhairworld'
+  args     : start
+  exec_mode: cluster
+  instance_var: 'NODE_APP_INSTANCE'
+  max_memory_restart: '300M'
+  env      :
+    NODE_ENV: development
+  env_production:
+    NODE_ENV: production
