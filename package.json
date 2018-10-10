@@ -5,14 +5,14 @@
   "main": "index.js",
   "config": {
     "nuxt": {
-      "host": "0.0.0.0",
+      "host": "127.0.0.1",
       "port": "5002"
     }
   },
   "scripts": {
     "dev": "nuxt",
     "build": "nuxt build",
-    "start": "nuxt start --spa"
+    "start": "nuxt start"
   },
   "author": "",
   "license": "ISC",
