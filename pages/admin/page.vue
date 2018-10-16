@@ -20,10 +20,36 @@
 										v-for="item in pageConfig.index.banner"
 										:key="item._id"
 										:span="6">
-										<div
-											@click="changeBannerImg(item._id)"
-											class="setting-slide-img-con">
+										<div class="setting-slide-img-con">
+											<div class="banner-redirect-url">
+												<div v-if="item._id === editBannerId">
+													<el-input
+														v-model="bannerPath"
+														clearable
+														size="small">
+													</el-input>
+												</div>
+												<div v-else>
+													<el-input
+														v-model="item.path"
+														disabled
+														size="small">
+													</el-input>
+												</div>
+												<div v-if="item._id === editBannerId">
+													<el-button
+														@click="updateBannerPath(item._id)"
+														type="primary"
+														size="small">更新</el-button>	
+												</div>
+												<div v-else>
+													<el-button
+														@click="editBannerPath(item)"
+														size="small">编辑</el-button>	
+												</div>
+											</div>
 											<img
+												@click="changeBannerImg(item._id)"
 												class="setting-slide-img"
 												:src="item.img">
 										</div>
@@ -178,8 +204,10 @@
 					}
 				},
 				editServiceId: '',
+				editBannerId: '',
 				serviceDescription: '',
-				serviceTitle: ''
+				serviceTitle: '',
+				bannerPath: ''
 			}
 		},
 		created () {
@@ -237,6 +265,21 @@
 				})
 				this.$store.dispatch('page/updatePageConfig', pageConfig)
 				this.editServiceId = null
+			},
+			editBannerPath ({ _id, path }) {
+				this.editBannerId = _id
+				this.bannerPath = path
+			},
+			updateBannerPath (bannerId) {
+				const payload = JSON.parse(JSON.stringify(this.pageConfig))
+				payload.index.banner.map(ele => {
+					if (ele._id === bannerId) {
+						ele.path = this.bannerPath
+					}
+				})
+				this.$store.dispatch('page/updatePageConfig', payload)
+				this.bannerPath = ''
+				this.editBannerId = ''
 			}
 		}
 	}
@@ -248,14 +291,24 @@
 	}
 
 	.setting-slide-img {
-		width: auto;
-		height: auto;
-		max-width: 100%;
-		max-height: 100%;
+    width: 100%;
+    display: block;
 	}
 
 	.setting-slide-img-con {
 		padding: 0 10px 5px 10px;
+		text-align: center;
+	}
+
+	.banner-redirect-url {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		padding-bottom: 20px;
+	}
+
+	.banner-redirect-url div {
+		padding-right: 5px;
 	}
 
 	.setting-service-img {
