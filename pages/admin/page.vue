@@ -14,46 +14,49 @@
 							<el-card>
 								<div slot="header">
 									<span>Banner</span>
+									<el-button style="float: right; padding: 3px 0" type="text">+ 添加</el-button>
 								</div>
 								<div>
-									<el-col
-										v-for="item in pageConfig.index.banner"
-										:key="item._id"
-										:span="6">
-										<div class="setting-slide-img-con">
-											<div class="banner-redirect-url">
-												<div v-if="item._id === editBannerId">
-													<el-input
-														v-model="bannerPath"
-														clearable
-														size="small">
-													</el-input>
+									<draggable :list="bannerIndex" @end="moveBanner">
+										<el-col
+											v-for="item in bannerIndex"
+											:key="item._id"
+											:span="6">
+											<div class="setting-slide-img-con">
+												<div class="banner-redirect-url">
+													<div v-if="item._id === editBannerId">
+														<el-input
+															v-model="bannerPath"
+															clearable
+															size="small">
+														</el-input>
+													</div>
+													<div v-else>
+														<el-input
+															v-model="item.path"
+															disabled
+															size="small">
+														</el-input>
+													</div>
+													<div v-if="item._id === editBannerId">
+														<el-button
+															@click="updateBannerPath(item._id)"
+															type="primary"
+															size="small">更新</el-button>	
+													</div>
+													<div v-else>
+														<el-button
+															@click="editBannerPath(item)"
+															size="small">编辑</el-button>	
+													</div>
 												</div>
-												<div v-else>
-													<el-input
-														v-model="item.path"
-														disabled
-														size="small">
-													</el-input>
-												</div>
-												<div v-if="item._id === editBannerId">
-													<el-button
-														@click="updateBannerPath(item._id)"
-														type="primary"
-														size="small">更新</el-button>	
-												</div>
-												<div v-else>
-													<el-button
-														@click="editBannerPath(item)"
-														size="small">编辑</el-button>	
-												</div>
+												<img
+													@click="changeBannerImg(item._id)"
+													class="setting-slide-img"
+													:src="item.img">
 											</div>
-											<img
-												@click="changeBannerImg(item._id)"
-												class="setting-slide-img"
-												:src="item.img">
-										</div>
-									</el-col>
+										</el-col>
+									</draggable>
 								</div>
 							</el-card>
 						</el-col>
@@ -63,6 +66,7 @@
 						<el-card class="setting-service-card">
 							<div slot="header">
 								<span>Services</span>
+								<el-button style="float: right; padding: 3px 0" type="text">+ 添加</el-button>
 							</div>
 							<el-row class="setting-service-content-con">
 
@@ -183,6 +187,7 @@
 <script>
 	import { mapState } from 'vuex'
 	import _ from 'lodash'
+	import draggable from 'vuedraggable'
 
 	import uploadDialog from '@/components/uploadDialog'
 	import pageConfigApi from '@/apis/pageConfig'
@@ -190,7 +195,8 @@
 	export default {
 		layout: 'admin',
 		components: {
-			uploadDialog
+			uploadDialog,
+			draggable
 		},
 		computed: mapState({
 			pageConfig: state => state.page.pageConfig
@@ -207,11 +213,13 @@
 				editBannerId: '',
 				serviceDescription: '',
 				serviceTitle: '',
-				bannerPath: ''
+				bannerPath: '',
+				bannerIndex: []
 			}
 		},
-		created () {
-			this.$store.dispatch('page/setPageConfig')	
+		async created () {
+			await this.$store.dispatch('page/setPageConfig')
+			this.bannerIndex = JSON.parse(JSON.stringify(this.pageConfig.index.banner))
 		},
 		methods: {
 			async changeBannerImg (imgId) {
@@ -270,16 +278,22 @@
 				this.editBannerId = _id
 				this.bannerPath = path
 			},
-			updateBannerPath (bannerId) {
+			async updateBannerPath (bannerId) {
 				const payload = JSON.parse(JSON.stringify(this.pageConfig))
 				payload.index.banner.map(ele => {
 					if (ele._id === bannerId) {
 						ele.path = this.bannerPath
 					}
 				})
-				this.$store.dispatch('page/updatePageConfig', payload)
+				await this.$store.dispatch('page/updatePageConfig', payload)
+				this.bannerIndex = JSON.parse(JSON.stringify(this.pageConfig.index.banner))
 				this.bannerPath = ''
 				this.editBannerId = ''
+			},
+			moveBanner () {
+				const payload = JSON.parse(JSON.stringify(this.pageConfig))
+				payload.index.banner = this.bannerIndex
+				if (this.bannerIndex.length) this.$store.dispatch('page/updatePageConfig', payload)
 			}
 		}
 	}
