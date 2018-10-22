@@ -8,7 +8,7 @@
 			<div class="upload-dialog-img-con">
 				<el-upload
 					class="avatar-uploader"
-					action="http://localhost:3010/api/qiniu/upload"
+					:action="apiUrl + '/api/qiniu/upload'"
 					:show-file-list="false"
 					:on-success="handleImgSuccess"
 					:before-upload="beforeImgUpload">
@@ -33,7 +33,8 @@
 				isShow: state => state.uploadDialog.isShow,
 				imgUrl: state => state.uploadDialog.imgUrl,
 				pageConfig: state => state.page.pageConfig,
-				changeOptions: state => state.page.changeOptions
+				changeOptions: state => state.page.changeOptions,
+				apiUrl: state => state.apiUrl
 			})
 		},
 		data() {

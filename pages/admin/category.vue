@@ -15,10 +15,24 @@
 							:title="isEdit ? '更新分类' : '添加分类'"
 							:visible.sync="addCategoryVisible"
 							width="30%">
-							<el-input
-								v-model="categoryObj.name"
-								placeholder="输入新添加类别的名称">
-							</el-input>
+
+							<div class="category-uploader-con">
+								<el-upload
+									class="category-uploader"
+									:action="apiUrl + '/api/qiniu/upload'"
+									:show-file-list="false"
+									:on-success="handleCatImgSuccess"
+									:before-upload="beforeImgUpload">
+									<img v-if="categoryObj.img" :src="categoryObj.img" class="avatar">
+									<i v-else class="el-icon-plus category-uploader-icon"></i>
+								</el-upload>
+
+								<el-input
+									v-model="categoryObj.name"
+									placeholder="输入新添加类别的名称">
+								</el-input>
+							</div>
+
 							<span slot="footer" class="dialog-footer">
 								<el-button @click="addCategoryVisible = false">取 消</el-button>
 								<el-button v-if="!isEdit" type="primary" @click="createCategory">确 定</el-button>
@@ -76,14 +90,22 @@
 	import category from '@/apis/category'	
 	import formatters from '@/utils/formatters'
 
+	import { mapState } from 'vuex'
+
 	export default {
 		layout: 'admin',
+		computed: {
+			...mapState({
+				apiUrl: state => state.apiUrl
+			})
+		},
 		data() {
 			return {
 				addCategoryVisible: false,
 				isEdit: false,
 				categoryObj: {
-					name: ''
+					name: '',
+					img: ''
 				},
 				categories: []
 			}
@@ -122,9 +144,27 @@
 			editCategory (row) {
 				this.addCategoryVisible = true
 				this.isEdit = true
-				this.categoryObj = row
+				const { name, img, _id } = row
+				this.categoryObj._id = _id
+				this.categoryObj.name = name
+				this.categoryObj.img = img
 			},
-			formatDate (row) { return formatters.formatDate({ date: row.createdAt }) }
+			formatDate (row) { return formatters.formatDate({ date: row.createdAt }) },
+      handleCatImgSuccess(res, file) {
+				this.categoryObj.img = res.data[0]
+      },
+      beforeImgUpload(file) {
+        const isJPG = file.type === 'image/jpeg';
+        const isLt2M = file.size / 1024 / 1024 < 2;
+
+        if (!isJPG) {
+          this.$message.error('上传头像图片只能是 JPG 格式!');
+        }
+        if (!isLt2M) {
+          this.$message.error('上传头像图片大小不能超过 2MB!');
+        }
+        return isJPG && isLt2M;
+      }
 		}
 	}
 </script>
@@ -139,4 +179,35 @@
 		width: 50px;
 		height: 50px;
 	}
+
+	.category-uploader-con {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+	}
+
+  .category-uploader .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .category-uploader .el-upload:hover {
+    border-color: #409EFF;
+  }
+  .category-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 80px;
+    height: 80px;
+    line-height: 80px;
+    text-align: center;
+  }
+  .avatar {
+    width: 80px;
+    height: 80px;
+    display: block;
+  }
 </style>

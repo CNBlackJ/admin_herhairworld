@@ -2,7 +2,8 @@ import adminUser from '@/apis/adminUser'
 import LS from '@/apis/localStorage'
 
 export const state = () => ({
-  user: null
+  user: null,
+  apiUrl: process.env.NODE_ENV === 'production' ? 'http://47.90.207.98:3010' : 'http://localhost:3010'
 })
 
 export const mutations = {

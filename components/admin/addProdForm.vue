@@ -39,11 +39,6 @@
 			
 			<el-row>
 				<el-col :span="8">
-					<el-form-item label="价格" prop="price">
-						<el-input v-model.number="prod.price"></el-input>
-					</el-form-item>
-				</el-col>
-				<el-col :span="8">
 					<el-form-item label="库存数" prop="quantity">
 						<el-input v-model.number="prod.quantity"></el-input>
 					</el-form-item>
@@ -148,7 +143,7 @@
 							<div>
 								<el-upload
 									class="mainimg-uploader"
-									action="http://localhost:3010/api/qiniu/upload"
+									:action="apiUrl + '/api/qiniu/upload'"
 									:show-file-list="false"
 									:on-success="handleMainImgSuccess"
 									:before-upload="beforeMainImgUpload">
@@ -166,7 +161,7 @@
 							<div>
 								<el-upload
 									class="upload-demo"
-									action="http://localhost:3010/api/qiniu/upload"
+									:action="apiUrl + '/api/qiniu/upload'"
 									:on-preview="handlePreview"
 									:on-remove="handleRemove"
 									:file-list="prod.imgs"
@@ -197,6 +192,7 @@
 
 <script>
 	import _ from 'lodash'
+	import { mapState } from 'vuex'
 
 	import product from '@/apis/product'
 	import category from '@/apis/category'
@@ -206,6 +202,11 @@
 			'isEdit',
 			'prodId'
 		],
+		computed: {
+			...mapState({
+				apiUrl: state => state.apiUrl
+			})
+		},
 		data() {
 			return {
 				categories: [],

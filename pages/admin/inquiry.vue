@@ -33,7 +33,7 @@
 			</el-table-column>
 			<el-table-column
 			  sortable
-        prop="createdAt"
+        :formatter="formatDate"
         label="时间">
 			</el-table-column>
 			<el-table-column
@@ -41,10 +41,6 @@
 				label="操作"
 				width="100">
 				<template slot-scope="scope">
-					<el-button
-						@click="tagInquiryUser(scope.row)"
-						type="text"
-						size="small">标记</el-button>
 					<el-button
 						@click="deleteInquiryUser(scope.row)"
 						type="text"
@@ -59,6 +55,7 @@
 
 <script>
 	import inquiry from '@/apis/inquiry'
+	import moment from 'moment'
 
 	export default {
 		layout: 'admin',
@@ -83,8 +80,8 @@
 					console.log(`deleteInquiryUser: ${JSON.stringify(err)}`)
 				})
 			},
-			tagInquiryUser (inquiryInfo) {
-				console.log(`tagInquiryUser: ${JSON.stringify(inquiryInfo)}`)
+			formatDate (row, col) {
+				return moment(row.createdAt).format('YYYY-MM-DD HH:mm')
 			}
 		}
 	}
