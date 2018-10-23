@@ -83,7 +83,7 @@
 								:key="length._id"
 								closable
 								:disable-transitions="false"
-								@close="removeLenPrice(length._id)">
+								@close="removeLenPrice(length.len)">
 								{{length.len}} inch - $ {{length.price}}
 							</el-tag>
 							<div v-if="priceLenVisible">
@@ -284,9 +284,9 @@
 			async getProd () {
 				if (this.isEdit) this.prod = await product.getById(this.prodId)
 			},
-      removeLenPrice(_id) {
+      removeLenPrice(len) {
 				const lengths = [...this.prod.lengths]
-				_.remove(lengths, ele => ele._id === _id)
+				_.remove(lengths, ele => ele.len === len)
 				this.prod.lengths = lengths
       },
       showInput() {
