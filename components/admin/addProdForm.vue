@@ -13,38 +13,30 @@
 					</el-form-item>
 				</el-col>
 				<el-col :span="6">
-					<el-form-item label="最小订单数" prop="orderMin">
-							<el-input v-model.number="prod.orderMin"></el-input>
-						</el-form-item>
-				</el-col>
-			</el-row>
-
-			<el-row>
-				<el-col :span="8">
-					<el-form-item label="颜色" prop="color">
-						<el-input v-model="prod.color"></el-input>
-					</el-form-item>
-				</el-col>
-				<el-col :span="8">
-					<el-form-item label="材料" prop="material">
-						<el-input v-model="prod.material"></el-input>
-					</el-form-item>
-				</el-col>
-				<el-col :span="8">
 					<el-form-item label="包装" prop="package">
 						<el-input v-model="prod.package"></el-input>
 					</el-form-item>
 				</el-col>
 			</el-row>
-			
+
 			<el-row>
-				<el-col :span="8">
-					<el-form-item label="库存数" prop="quantity">
+				<el-col :span="6">
+					<el-form-item label="颜色" prop="color">
+						<el-input v-model="prod.color"></el-input>
+					</el-form-item>
+				</el-col>
+				<el-col :span="6">
+					<el-form-item label="材料" prop="material">
+						<el-input v-model="prod.material"></el-input>
+					</el-form-item>
+				</el-col>
+				<el-col :span="6">
+					<el-form-item label="库存数(件)" prop="quantity">
 						<el-input v-model.number="prod.quantity"></el-input>
 					</el-form-item>
 				</el-col>
-				<el-col :span="8">
-					<el-form-item label="重量" required>
+				<el-col :span="6">
+					<el-form-item label="重量(g)" required>
 						<el-col :span="11">
 							<el-form-item prop="minWeight">
 								<el-input v-model.number="prod.minWeight"></el-input>
@@ -75,7 +67,22 @@
 			</el-row>
 
 			<el-row>
-				<el-col :span="24">
+				<el-col :span="6">
+					<el-form-item label="封面图" prop="description">
+						<div style="text-align: center">
+							<el-upload
+								class="mainimg-uploader"
+								:action="apiUrl + '/api/qiniu/upload'"
+								:show-file-list="false"
+								:on-success="handleMainImgSuccess"
+								:before-upload="beforeMainImgUpload">
+								<img v-if="prod.mainImg" :src="prod.mainImg" class="mainimg">
+								<i v-else class="el-icon-plus mainimg-uploader-icon"></i>
+							</el-upload>
+						</div>
+					</el-form-item>
+				</el-col>
+				<el-col :span="14">
 					<el-form-item label="长度 / 价格">
 						<el-card>
 							<el-tag
@@ -88,10 +95,10 @@
 							</el-tag>
 							<div v-if="priceLenVisible">
 								<el-row>
-									<el-col :span="2">
+									<el-col :span="3">
 										Length: 
 									</el-col>
-									<el-col :span="6">
+									<el-col :span="4">
 										<el-input
 											v-model="length"
 											size="small">
@@ -100,7 +107,7 @@
 									<el-col :span="2" :offset="1">
 										Price:
 									</el-col>
-									<el-col :span="6">
+									<el-col :span="4">
 										<el-input
 											v-model="price"
 											size="small">
@@ -113,7 +120,7 @@
 											type="primary">
 										确定</el-button>
 									</el-col>
-									<el-col :span="2">
+									<el-col :span="2" :offset="1">
 										<el-button
 											@click="lenPriceCancle"
 											size="small">
@@ -135,28 +142,7 @@
 	
 			<el-row :gutter="20">
 				<el-col :span="10">
-					<el-form-item label="封面图" prop="description">
-						<el-card>
-							<div slot="header">
-								<span>选择一张图片做为产品展示封面图片</span>
-							</div>
-							<div>
-								<el-upload
-									class="mainimg-uploader"
-									:action="apiUrl + '/api/qiniu/upload'"
-									:show-file-list="false"
-									:on-success="handleMainImgSuccess"
-									:before-upload="beforeMainImgUpload">
-									<img v-if="prod.mainImg" :src="prod.mainImg" class="mainimg">
-									<i v-else class="el-icon-plus mainimg-uploader-icon"></i>
-								</el-upload>
-							</div>
-						</el-card>
-					</el-form-item>
-				</el-col>
-
-				<el-col :span="12">
-					<el-form-item label="产品图" prop="description">
+					<el-form-item label="产品图">
 						<el-card>
 							<div>
 								<el-upload
@@ -165,7 +151,27 @@
 									:on-preview="handlePreview"
 									:on-remove="handleRemove"
 									:file-list="prod.imgs"
-									:on-success="handleImgsSuccess"
+									:on-success="handleProductsImgsSuccess"
+									list-type="picture">
+									<el-button size="small" type="primary">点击上传</el-button>
+									<div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+								</el-upload>
+							</div>
+						</el-card>
+					</el-form-item>
+				</el-col>
+
+				<el-col :span="10">
+					<el-form-item label="详情图">
+						<el-card>
+							<div>
+								<el-upload
+									class="upload-demo"
+									:action="apiUrl + '/api/qiniu/upload'"
+									:on-preview="handlePreview"
+									:on-remove="handleRemove"
+									:file-list="prod.detailImgs.product"
+									:on-success="handleDetailImgsSuccess"
 									list-type="picture">
 									<el-button size="small" type="primary">点击上传</el-button>
 									<div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
@@ -226,6 +232,9 @@
 					mainImg: '',
 					category: '',
 					imgs: [],
+					detailImgs: {
+						product: []
+					},
 					minWeight: 90,
 					maxWeight: 110,
 					online: true,
@@ -278,7 +287,8 @@
 		},
 		async created () {
 			await this.getProd()
-			this.categories = await category.list({})
+			const categories = await category.list({})
+			this.categories = categories.filter(ele => ele.isShow)
 		},
 		methods: {
 			async getProd () {
@@ -311,7 +321,10 @@
 					if (valid) {
 						// 更新图片字段
 						this.prod.imgs = this.prod.imgs.map(img => { return { name: img.name, url: img.url } })
-						console.log(this.prod)
+						const detailProductImgs = this.prod.detailImgs.product.map(img => {
+							return { name: img.name, url: img.url }
+						})
+						this.prod.detailImgs.product = detailProductImgs
 						await product.create(this.prod)
 						this.$emit('closeAddProdForm')
 						this.$message({
@@ -345,6 +358,10 @@
 						this.prod.imgs = this.prod.imgs.map(img => {
 							return { name: img.name, url: img.url }
 						})
+						const detailProductImgs = this.prod.detailImgs.product.map(img => {
+							return { name: img.name, url: img.url }
+						})
+						this.prod.detailImgs.product = detailProductImgs
 						await product.update({ prod: this.prod })
 						this.$message({
 							message: '更新产品成功',
@@ -363,16 +380,17 @@
         console.log(file);
       },
 			handleMainImgSuccess(res, file) {
-				// this.prod.mainImg = URL.createObjectURL(file.raw);
 				this.prod.mainImg = res.data[0]
 			},
-			handleImgsSuccess (res, file, fileList) {
+			handleProductsImgsSuccess (res, file, fileList) {
 				const url = res.data[0]
 				const payload = { name: file.name, url }
 				this.prod.imgs.push(payload)
-				// this.prod.imgs = fileList.map(file => {
-				// 	return { name: file.name, url: res.data[0] }
-				// })
+			},
+			handleDetailImgsSuccess (res, file, fileList) {
+				const url = res.data[0]
+				const payload = { name: file.name, url }
+				this.prod.detailImgs.product.push(payload)
 			},
       beforeMainImgUpload(file) {
         const isJPG = file.type === 'image/jpeg';
@@ -397,6 +415,7 @@
     cursor: pointer;
     position: relative;
     overflow: hidden;
+		text-align: center;
   }
   .mainimg-uploader .el-upload:hover {
     border-color: #409EFF;
@@ -404,14 +423,14 @@
   .mainimg-uploader-icon {
     font-size: 28px;
     color: #8c939d;
-    width: 178px;
-    height: 178px;
-    line-height: 178px;
+    width: 80px;
+    height: 80x;
+    line-height: 80px;
     text-align: center;
   }
   .mainimg {
-    width: 160px;
-    height: 160px;
+    width: 80px;
+    height: 80px;
     display: block;
   }
 
