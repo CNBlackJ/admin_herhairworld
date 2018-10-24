@@ -373,8 +373,13 @@
 					}
 				});
 			},
-      handleRemove(file, fileList) {
-        console.log(file, fileList);
+      handleRemove(file) {
+				const { name } = file
+				let index = -1
+				this.prod.detailImgs.product.forEach((ele, i) => {
+					if (ele.name !== name) index = i
+				})
+				if (index > -1) this.prod.detailImgs.product.splice(index, 1)
       },
       handlePreview(file) {
         console.log(file);
