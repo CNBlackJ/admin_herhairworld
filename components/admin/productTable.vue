@@ -94,11 +94,10 @@
 				return row.category.name
 			},
 			formatPrice (row, column) {
-				const { lengths, _id } = row
+				const { lengths } = row
 				let price = ''
 				if (lengths.length) {
 					const allPrice =  _.sortedUniq([...lengths].map(ele => ele.price))
-					if (_id === '5bcaf854abcc5b3f00758e85') console.log(allPrice)
 					price = `${allPrice[0].toFixed(2)} - ${allPrice.pop().toFixed(2)}`
 				}
 				return price
