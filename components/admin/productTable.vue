@@ -18,17 +18,12 @@
 			</el-table-column>
 			<el-table-column
 			sortable
-        prop="orderMin"
-        label="最小订单数">
-			</el-table-column>
-			<el-table-column
-			sortable
         prop="color"
         label="颜色">
 			</el-table-column>
 			<el-table-column
 			  sortable
-        prop="price"
+        :formatter="formatPrice"
         label="价格 ($)">
 			</el-table-column>
 			<el-table-column
@@ -60,6 +55,7 @@
 
 <script>
 	import { mapState } from 'vuex'
+	import _ from 'lodash'
 
 	import product from '@/apis/product'
 	import category from '@/apis/category'
@@ -87,15 +83,25 @@
 				return `${row.minWeight} - ${row.maxWeight}`
 			},
 			formatLen (row, column) {
+				let length = ''
 				if (row.lengths.length) {
 					const allLengths = [...row.lengths].map(ele => ele.len).sort()
-					return `${allLengths[0]} - ${allLengths.pop()}`
-				} else {
-					return ''
+					length = `${allLengths[0]} - ${allLengths.pop()}`
 				}
+				return length
 			},
 			formatCategory (row, column) {
 				return row.category.name
+			},
+			formatPrice (row, column) {
+				const { lengths, _id } = row
+				let price = ''
+				if (lengths.length) {
+					const allPrice =  _.sortedUniq([...lengths].map(ele => ele.price))
+					if (_id === '5bcaf854abcc5b3f00758e85') console.log(allPrice)
+					price = `${allPrice[0].toFixed(2)} - ${allPrice.pop().toFixed(2)}`
+				}
+				return price
 			}
 		}
 	}
