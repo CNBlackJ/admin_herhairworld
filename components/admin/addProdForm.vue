@@ -149,7 +149,7 @@
 									class="upload-demo"
 									:action="apiUrl + '/api/qiniu/upload'"
 									:on-preview="handlePreview"
-									:on-remove="handleRemove"
+									:on-remove="handleRemoveProductImg"
 									:file-list="prod.imgs"
 									:on-success="handleProductsImgsSuccess"
 									list-type="picture">
@@ -169,7 +169,7 @@
 									class="upload-demo"
 									:action="apiUrl + '/api/qiniu/upload'"
 									:on-preview="handlePreview"
-									:on-remove="handleRemove"
+									:on-remove="handleRemoveDetailImg"
 									:file-list="prod.detailImgs.product"
 									:on-success="handleDetailImgsSuccess"
 									list-type="picture">
@@ -373,13 +373,21 @@
 					}
 				});
 			},
-      handleRemove(file) {
+      handleRemoveDetailImg(file) {
 				const { name } = file
 				let index = -1
 				this.prod.detailImgs.product.forEach((ele, i) => {
 					if (ele.name !== name) index = i
 				})
 				if (index > -1) this.prod.detailImgs.product.splice(index, 1)
+      },
+      handleRemoveProductImg(file) {
+				const { name } = file
+				let index = -1
+				this.prod.imgs.forEach((ele, i) => {
+					if (ele.name !== name) index = i
+				})
+				if (index > -1) this.prod.imgs.splice(index, 1)
       },
       handlePreview(file) {
         console.log(file);
