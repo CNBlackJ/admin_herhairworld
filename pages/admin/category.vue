@@ -26,11 +26,26 @@
 									<img v-if="categoryObj.img" :src="categoryObj.img" class="avatar">
 									<i v-else class="el-icon-plus category-uploader-icon"></i>
 								</el-upload>
-
-								<el-input
-									v-model="categoryObj.name"
-									placeholder="输入新添加类别的名称">
-								</el-input>
+								<el-form>
+									<el-row>
+										<el-col :span="3">
+											<el-form-item label="排序">
+												<el-input
+													v-model="categoryObj.index"
+													placeholder="排序">
+												</el-input>
+											</el-form-item>
+										</el-col>
+										<el-col :span="18" :offset="3">
+											<el-form-item label="名称">
+												<el-input
+													v-model="categoryObj.name"
+													placeholder="输入新添加类别的名称">
+												</el-input>
+											</el-form-item>
+										</el-col>
+									</el-row>
+								</el-form>
 							</div>
 
 							<span slot="footer" class="dialog-footer">
@@ -45,6 +60,12 @@
 							:data="categories"
 							stripe
 							style="width: 100%">
+							<el-table-column
+								sortable
+								prop="index"
+								label="序号"
+								width="80">
+							</el-table-column>
 							<el-table-column
 								label="图片"
 								width="180">
@@ -105,7 +126,8 @@
 				isEdit: false,
 				categoryObj: {
 					name: '',
-					img: ''
+					img: '',
+					index: 0
 				},
 				categories: []
 			}
@@ -115,7 +137,7 @@
 		},
 		methods: {
 			async listCategory () {
-				this.categories = await category.list({})
+				this.categories = await category.list({ sort: 'index' })
 			},
 			createCategory () {
 				category.create({ category: this.categoryObj }).then(async resp => {
@@ -144,10 +166,11 @@
 			editCategory (row) {
 				this.addCategoryVisible = true
 				this.isEdit = true
-				const { name, img, _id } = row
+				const { name, img, _id, index } = row
 				this.categoryObj._id = _id
 				this.categoryObj.name = name
 				this.categoryObj.img = img
+				this.categoryObj.index = index
 			},
 			formatDate (row) { return formatters.formatDate({ date: row.createdAt }) },
       handleCatImgSuccess(res, file) {
