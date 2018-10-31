@@ -1,6 +1,10 @@
 <template>
 	<div class="products-container">
 		<el-table
+			v-loading="isLoading"
+			element-loading-text="拼命加载中"
+			element-loading-spinner="el-icon-loading"
+			element-loading-background="rgba(0, 0, 0, 0.8)"
       :data="inquiryList"
 			style="width: 100%">
 			<el-table-column
@@ -61,6 +65,7 @@
 		layout: 'admin',
 		data () {
 			return {
+				isLoading: true,
 				inquiryList: []
 			}
 		},
@@ -68,10 +73,10 @@
 			this.listInquiries()
 		},
 		methods: {
-			listInquiries () {
-				inquiry.list({}).then((resp) => {
-					this.inquiryList = resp.data
-				})
+			async listInquiries () {
+				const resp = await inquiry.list({})
+				this.inquiryList = resp.data
+				this.isLoading = false
 			},
 			deleteInquiryUser (inquiryInfo) {
 				inquiry.delete({ id: inquiryInfo._id }).then(() => {

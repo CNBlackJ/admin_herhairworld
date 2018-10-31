@@ -1,6 +1,10 @@
 <template>
 	<div class="category-container">
-		<el-row>
+		<el-row
+			v-loading="isLoading"
+			element-loading-text="拼命加载中"
+			element-loading-spinner="el-icon-loading"
+			element-loading-background="rgba(0, 0, 0, 0.8)">
 			<el-col :span="16">
 				<el-card>
 					<div slot="header">
@@ -122,6 +126,7 @@
 		},
 		data() {
 			return {
+				isLoading: true,
 				addCategoryVisible: false,
 				isEdit: false,
 				categoryObj: {
@@ -134,6 +139,7 @@
 		},
 		async created () {
 			await this.listCategory()
+			this.isLoading = false
 		},
 		methods: {
 			async listCategory () {

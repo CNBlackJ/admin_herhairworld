@@ -1,6 +1,10 @@
 <template>
 	<div class="table-container">
 		<el-table
+			v-loading="isLoading"
+			element-loading-text="拼命加载中"
+			element-loading-spinner="el-icon-loading"
+			element-loading-background="rgba(0, 0, 0, 0.8)"
 			:data="products"
 			style="width: 100%">
 			<el-table-column type="expand">
@@ -71,12 +75,14 @@
 		}),
 		data() {
 			return {
-				categories: []
+				categories: [],
+				isLoading: true
 			}
 		},
 		async created () {
 			await this.$store.dispatch('product/listProducts')
 			this.categories = await category.list({})
+			this.isLoading = false
 		},
 		methods: {
 			formatWeight (row, column) {

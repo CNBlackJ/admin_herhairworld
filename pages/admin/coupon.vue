@@ -59,6 +59,10 @@
 
 			<div>
 				<el-table
+					v-loading="isLoading"
+					element-loading-text="拼命加载中"
+					element-loading-spinner="el-icon-loading"
+					element-loading-background="rgba(0, 0, 0, 0.8)"
 					:data="coupons"
 					style="width: 100%">
 					<el-table-column
@@ -140,6 +144,7 @@
 		layout: 'admin',
 		data () {
 			return {
+				isLoading: true,
 				coupons: [],
 				showForm: false,
 				couponForm: {
@@ -158,6 +163,7 @@
 		},
 		async created () {
 			this.coupons = await coupon.list({})
+			this.isLoading = false
 		},
     methods: {
 			cancel () {

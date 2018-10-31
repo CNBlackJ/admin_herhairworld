@@ -1,22 +1,12 @@
 import * as axios from 'axios'
 
-function getCookieInClient (name) {
-  const reg = new RegExp('(^| )' + name + '=([^;]*)(;|$)')
-  const arr = document.cookie.match(reg)
-  if (arr) {
-    return unescape(arr[2])
-  } else {
-    return null
-  }
-}
-
 export default ({ app, store, redirect }) => {
   axios.defaults.baseURL = process.env.NODE_ENV === 'production' ? 'http://47.90.207.98:3010' : 'http://127.0.0.1:3010'
 
   axios.interceptors.request.use(req => {
     let authToken = ''
-    if (typeof document === 'object') {
-      authToken = getCookieInClient('adminToken')
+    if (!process.server) {
+      authToken = window.localStorage.getItem('adminToken')
     } else {
       authToken = store.state.adminToken
     }

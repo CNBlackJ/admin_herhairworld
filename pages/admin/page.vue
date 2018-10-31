@@ -8,7 +8,11 @@
 					</span>
 					<i class="el-icon-info" style="float: right; padding: 3px 0"></i>
 				</div>
-				<div>
+				<div
+					v-loading="isLoading"
+					element-loading-text="拼命加载中"
+					element-loading-spinner="el-icon-loading"
+					element-loading-background="rgba(0, 0, 0, 0.8)">
 					<el-row>
 						<el-col :span="24">
 							<el-card>
@@ -203,6 +207,7 @@
 		}),
 		data () {
 			return {
+				isLoading: true,
 				pageConfigForm: {
 					index: {
 						banner: [],
@@ -220,6 +225,7 @@
 		async created () {
 			await this.$store.dispatch('page/setPageConfig')
 			this.bannerIndex = JSON.parse(JSON.stringify(this.pageConfig.index.banner))
+			this.isLoading = false
 		},
 		methods: {
 			async changeBannerImg (imgId) {
