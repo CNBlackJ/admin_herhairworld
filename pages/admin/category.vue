@@ -4,7 +4,7 @@
 			v-loading="isLoading"
 			element-loading-text="拼命加载中"
 			element-loading-spinner="el-icon-loading"
-			element-loading-background="rgba(0, 0, 0, 0.8)">
+			element-loading-background="hsla(0,0%,100%,.9)">
 			<el-col :span="16">
 				<el-card>
 					<div slot="header">
@@ -145,22 +145,19 @@
 			async listCategory () {
 				this.categories = await category.list({ sort: 'index' })
 			},
-			createCategory () {
-				category.create({ category: this.categoryObj }).then(async resp => {
-					this.addCategoryVisible = false
-					await this.listCategory()
-				}).catch(err => {
-					console.log(`createCategory: ${JSON.stringify(err)}`)
-				})
+			async createCategory () {
+				this.isLoading = true
+				await category.create({ category: this.categoryObj })
+				await this.listCategory()
+				this.addCategoryVisible = false
+				this.isLoading = false
 			},
-			updateCategory () {
-				category.update({ category: this.categoryObj }).then(async resp => {
-					this.addCategoryVisible = false
-					this.isEdit = false
-					await this.listCategory()
-				}).catch(err => {
-					console.log(`updateCategory: ${JSON.stringify(err)}`)
-				})
+			async updateCategory () {
+				await category.update({ category: this.categoryObj })
+				await this.listCategory()
+				this.addCategoryVisible = false
+				this.isEdit = false
+				this.isLoading = false
 			},
 			deleteCategory (row) {
 				category.delete({ category: row }).then(async resp => {
@@ -178,7 +175,9 @@
 				this.categoryObj.img = img
 				this.categoryObj.index = index
 			},
-			formatDate (row) { return formatters.formatDate({ date: row.createdAt }) },
+			formatDate (row) {
+				return formatters.formatDate({ date: row.createdAt })
+			},
       handleCatImgSuccess(res, file) {
 				this.categoryObj.img = res.data[0]
       },

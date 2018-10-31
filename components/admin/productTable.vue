@@ -4,7 +4,7 @@
 			v-loading="isLoading"
 			element-loading-text="拼命加载中"
 			element-loading-spinner="el-icon-loading"
-			element-loading-background="rgba(0, 0, 0, 0.8)"
+			element-loading-background="hsla(0,0%,100%,.9)"
 			:data="products"
 			style="width: 100%">
 			<el-table-column type="expand">

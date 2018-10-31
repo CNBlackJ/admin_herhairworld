@@ -1,5 +1,9 @@
 <template>
-	<div class="addprod-con">
+	<div class="addprod-con"
+		v-loading="isLoading"
+		element-loading-text="拼命加载中"
+		element-loading-spinner="el-icon-loading"
+		element-loading-background="hsla(0,0%,100%,.9)">
 		<el-form :model="prod" :rules="rules" ref="prod" label-width="100px">
 			<el-row>
 				<el-col :span="10">
@@ -32,7 +36,7 @@
 				</el-col>
 				<el-col :span="6">
 					<el-form-item label="库存数(件)" prop="quantity">
-						<el-input v-model.number="prod.quantity"></el-input>
+						<el-input-number v-model.number="prod.quantity"></el-input-number>
 					</el-form-item>
 				</el-col>
 				<el-col :span="6">
@@ -98,20 +102,26 @@
 									<el-col :span="3">
 										Length: 
 									</el-col>
-									<el-col :span="4">
-										<el-input
+									<el-col :span="6">
+										<el-input-number
+											:precision="2"
 											v-model="length"
+											controls-position="right"
+											:min="0"
 											size="small">
-										</el-input>
+										</el-input-number>
 									</el-col>
 									<el-col :span="2" :offset="1">
 										Price:
 									</el-col>
-									<el-col :span="4">
-										<el-input
+									<el-col :span="6">
+										<el-input-number
+											:precision="2"
 											v-model="price"
+											controls-position="right"
+											:min="0"
 											size="small">
-										</el-input>
+										</el-input-number>
 									</el-col>
 									<el-col :span="2" :offset="1">
 										<el-button
@@ -215,6 +225,7 @@
 		},
 		data() {
 			return {
+				isLoading: true,
 				categories: [],
         priceLenVisible: false,
 				price: 0,
@@ -251,10 +262,6 @@
 						{ type: 'number', required: true, message: '请输入产品数量', trigger: 'blur' },
 						{ type: 'number', message: '库存必须为数字', trigger: 'blur' },
 					],
-					orderMin: [
-						{ type: 'number', required: true, message: '请输入产品最低价格', trigger: 'blur' },
-						{ type: 'number', message: '最小订单数必须为数字', trigger: 'blur' },
-					],
 					material: [
 						{ required: true, message: '请输入产品材料', trigger: 'blur' },
 					],
@@ -286,12 +293,13 @@
 			};
 		},
 		async created () {
-			await this.getProd()
+			await this.getProduct()
 			const categories = await category.list({})
 			this.categories = categories.filter(ele => ele.isShow)
+			this.isLoading = false
 		},
 		methods: {
-			async getProd () {
+			async getProduct () {
 				if (this.isEdit) this.prod = await product.getById(this.prodId)
 			},
       removeLenPrice(len) {
@@ -319,6 +327,7 @@
 			createProd(formName) {
 				this.$refs[formName].validate(async (valid) => {
 					if (valid) {
+						this.isLoading = true
 						// 更新图片字段
 						this.prod.imgs = this.prod.imgs.map(img => { return { name: img.name, url: img.url } })
 						const detailProductImgs = this.prod.detailImgs.product.map(img => {
@@ -326,6 +335,7 @@
 						})
 						this.prod.detailImgs.product = detailProductImgs
 						await product.create(this.prod)
+						this.isLoading = false
 						this.$emit('closeAddProdForm')
 						this.$message({
 							message: '新增产品成功',
