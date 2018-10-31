@@ -159,12 +159,9 @@
 				this.isEdit = false
 				this.isLoading = false
 			},
-			deleteCategory (row) {
-				category.delete({ category: row }).then(async resp => {
-					await this.listCategory()
-				}).catch(err => {
-					console.log(`deleteCategory: ${JSON.stringify(err)}`)
-				})
+			async deleteCategory (row) {
+				await category.delete({ category: row })
+				await this.listCategory()
 			},
 			editCategory (row) {
 				this.addCategoryVisible = true
