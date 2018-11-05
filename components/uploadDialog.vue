@@ -25,7 +25,7 @@
 </template>
 
 <script>
-	import { mapState } from 'vuex'
+	import { mapState, mapGetters } from 'vuex'
 
 	export default {
 		computed: {
@@ -62,6 +62,14 @@
 						}
 						return ele
 					})
+				} else if (position.toLowerCase() === 'categories') {
+					pageConfig.index.categories.map(ele => {
+						if (ele.index === _id) ele.img = this.imgUrl
+						delete ele._id
+						return ele
+					})
+				} else {
+					console.log('cannot found category')
 				}
 				this.$store.dispatch('page/updatePageConfig', pageConfig)
 				this.$store.commit('uploadDialog/SET_IS_SHOW')

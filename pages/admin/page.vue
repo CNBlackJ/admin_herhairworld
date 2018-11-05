@@ -170,16 +170,144 @@
 		</el-row>
 
 		<el-row>
-			<el-card>
-				<div slot="header">
-					<span>
-						产品详情页设置
-					</span>
-					<i class="el-icon-info" style="float: right; padding: 3px 0"></i>
-				</div>
-				<div>
-				</div>
-			</el-card>
+			<el-col :span="12">
+				<el-card>
+					<div slot="header">
+						<span>
+							分类设置
+						</span>
+						<i class="el-icon-info" style="float: right; padding: 3px 0"></i>
+					</div>
+					<div class="category-container">
+						<el-row>
+							<el-col :span="12">
+								<el-row>
+									<el-col :span="12">
+										<el-popover
+											placement="top-start"
+											trigger="hover">
+											<el-select
+												v-on:change="updateCategory('a')"
+												v-model="selectedCategories.a"
+												placeholder="请选择跳转分类">
+												<el-option
+													v-for="item in categoriesForList"
+													:key="item._id"
+													:label="item.name"
+													:value="item._id">
+												</el-option>
+											</el-select>
+											<div slot="reference" class="img-con" @click="changeCategoryImg(1)">
+												<img
+													:src="categories[0] ? categories[0].img : ''"
+													class="category-image">
+											</div>
+										</el-popover>
+									</el-col>
+									<el-col :span="12">
+										<el-popover
+											placement="top-start"
+											trigger="hover">
+											<el-select
+												v-on:change="updateCategory('b')"
+												v-model="selectedCategories.b"
+												placeholder="请选择跳转分类">
+												<el-option
+													v-for="item in categoriesForList"
+													:key="item._id"
+													:label="item.name"
+													:value="item._id">
+												</el-option>
+											</el-select>
+											<div slot="reference" class="img-con" @click="changeCategoryImg(2)">
+												<img
+													:src="categories[1] ? categories[1].img : ''"
+													class="category-image">
+											</div>
+										</el-popover>
+									</el-col>
+								</el-row>
+							</el-col>
+							<el-col :span="12">
+								<el-row>
+									<el-col :span="24">
+										<el-popover
+											placement="top-start"
+											trigger="hover">
+											<el-select
+												v-on:change="updateCategory('c')"
+												v-model="selectedCategories.c"
+												placeholder="请选择跳转分类">
+												<el-option
+													v-for="item in categoriesForList"
+													:key="item._id"
+													:label="item.name"
+													:value="item._id">
+												</el-option>
+											</el-select>
+											<div slot="reference" class="img-con" @click="changeCategoryImg(2)">
+												<img :src="categories[2] ? categories[2].img : ''" class="category-image">
+											</div>
+										</el-popover>
+									</el-col>
+									<el-col :span="12">
+										<el-popover
+											placement="top-start"
+											trigger="hover">
+											<el-select
+												v-on:change="updateCategory('d')"
+												v-model="selectedCategories.d"
+												placeholder="请选择跳转分类">
+												<el-option
+													v-for="item in categoriesForList"
+													:key="item._id"
+													:label="item.name"
+													:value="item._id">
+												</el-option>
+											</el-select>
+											<div slot="reference" class="img-con img-small" @click="changeCategoryImg(3)">
+												<img :src="categories[3] ? categories[3].img : ''" class="category-image">
+											</div>
+										</el-popover>
+									</el-col>
+									<el-col :span="12">
+										<el-popover
+											placement="top-start"
+											trigger="hover">
+											<el-select
+												v-on:change="updateCategory('e')"
+												v-model="selectedCategories.e"
+												placeholder="请选择跳转分类">
+												<el-option
+													v-for="item in categoriesForList"
+													:key="item._id"
+													:label="item.name"
+													:value="item._id">
+												</el-option>
+											</el-select>
+											<div slot="reference" class="img-con img-small" @click="changeCategoryImg(4)">
+												<img :src="categories[4] ? categories[4].img : ''" class="category-image">
+											</div>
+										</el-popover>
+									</el-col>
+								</el-row>
+							</el-col>
+						</el-row>
+					</div>
+				</el-card>
+			</el-col>
+			<el-col :span="12">
+				<el-card>
+					<div slot="header">
+						<span>
+							产品详情页设置
+						</span>
+						<i class="el-icon-info" style="float: right; padding: 3px 0"></i>
+					</div>
+					<div>
+					</div>
+				</el-card>
+			</el-col>
 		</el-row>
 
 		<no-ssr>
@@ -189,7 +317,7 @@
 </template>
 
 <script>
-	import { mapState } from 'vuex'
+	import { mapState, mapGetters } from 'vuex'
 	import _ from 'lodash'
 	import draggable from 'vuedraggable'
 
@@ -202,16 +330,23 @@
 			uploadDialog,
 			draggable
 		},
-		computed: mapState({
-			pageConfig: state => state.page.pageConfig
-		}),
+		computed: {
+			...mapGetters({
+				categories: 'page/categories',
+				categoriesForList: 'page/categoriesForList'
+			}),
+			...mapState({
+				pageConfig: state => state.page.pageConfig
+			})
+		},
 		data () {
 			return {
 				isLoading: true,
 				pageConfigForm: {
 					index: {
 						banner: [],
-						services: []
+						services: [],
+						categories: []
 					}
 				},
 				editServiceId: '',
@@ -219,11 +354,20 @@
 				serviceDescription: '',
 				serviceTitle: '',
 				bannerPath: '',
-				bannerIndex: []
+				bannerIndex: [],
+				selectedCategories: {
+					a: '',
+					b: '',
+					c: '',
+					d: '',
+					e: ''
+				}
 			}
 		},
 		async created () {
 			await this.$store.dispatch('page/setPageConfig')
+			await this.$store.dispatch('page/setCategories')
+			this.updateSelectedCategories()
 			this.bannerIndex = JSON.parse(JSON.stringify(this.pageConfig.index.banner))
 			this.isLoading = false
 		},
@@ -242,6 +386,14 @@
 					position: 'service',
 					_id: imgId,
 					imgUrl
+				}
+				this.$store.dispatch('page/setChangeOptions', changeOptions)
+			},
+			async changeCategoryImg (imgId) {
+				this.$store.commit('uploadDialog/SET_IS_SHOW')
+				const changeOptions = {
+					position: 'categories',
+					_id: imgId
 				}
 				this.$store.dispatch('page/setChangeOptions', changeOptions)
 			},
@@ -300,6 +452,24 @@
 				const payload = JSON.parse(JSON.stringify(this.pageConfig))
 				payload.index.banner = this.bannerIndex
 				if (this.bannerIndex.length) this.$store.dispatch('page/updatePageConfig', payload)
+			},
+			async updateCategory (tag) {
+				const index = tag.charCodeAt() - 96
+				const payload = JSON.parse(JSON.stringify(this.pageConfig))
+				payload.index.categories.map(ele => {
+					if (ele.index === index) {
+						ele.url = this.selectedCategories[tag]
+					}
+					delete ele._id
+				})
+				await this.$store.dispatch('page/updatePageConfig', payload)
+			},
+			updateSelectedCategories () {
+				const categories = this.pageConfig.index.categories
+				categories.forEach(ele => {
+					const key = 96 + Number(ele.index)
+					this.selectedCategories[String.fromCharCode(key)] = ele.url
+				})
 			}
 		}
 	}
@@ -384,5 +554,24 @@
 	
 	.service1-img {
 		padding: 3px
+	}
+
+	.category-container {
+		padding: 0 5px;
+	}
+
+	.category-image {
+		width: auto;
+		height: auto;
+		max-width: 100%;
+		max-height: 100%;	
+	}
+
+	.img-con {
+		padding: 0 2px;
+	}
+
+	.img-small {
+		margin-top: -2px;
 	}
 </style>
