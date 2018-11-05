@@ -454,7 +454,7 @@
 				if (this.bannerIndex.length) this.$store.dispatch('page/updatePageConfig', payload)
 			},
 			async updateCategory (tag) {
-				const index = tag.charCodeAt() - 96
+				const index = tag.charCodeAt() - 97
 				const payload = JSON.parse(JSON.stringify(this.pageConfig))
 				payload.index.categories.map(ele => {
 					if (ele.index === index) {
@@ -467,7 +467,7 @@
 			updateSelectedCategories () {
 				const categories = this.pageConfig.index.categories
 				categories.forEach(ele => {
-					const key = 96 + Number(ele.index)
+					const key = 97 + Number(ele.index)
 					this.selectedCategories[String.fromCharCode(key)] = ele.url
 				})
 			}
