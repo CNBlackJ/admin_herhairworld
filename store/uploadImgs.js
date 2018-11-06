@@ -1,5 +1,4 @@
 import axios from 'axios'
-import _ from 'lodash'
 import product from '@/apis/product'
 
 export const state = () => ({
@@ -51,5 +50,15 @@ export const actions = {
       }
       await product.update({ prod: payload })
     }
+  },
+  async updateProductImgIndex ({ state, rootState }, { type, imgList }) {
+    const editProductId = rootState.product.editProductId
+    const payload = { _id: editProductId }
+    if (type === 'details') {
+      Object.assign(payload, { detailImgs: { product: imgList } })
+    } else if (type === 'products') {
+      Object.assign(payload, { imgs: imgList })
+    }
+    await product.update({ prod: payload })
   }
 }

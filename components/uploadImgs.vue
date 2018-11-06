@@ -16,10 +16,50 @@
 					<i class="el-icon-upload"></i>
 					<div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
 				</el-upload>
-				<el-button @click="submitImgs" size="small" type="success">点击上传</el-button>
-				<el-button size="small" type="primary">排序</el-button>
+				<el-button
+					@click="submitImgs"
+					size="small"
+					type="warning">
+					点击立即上传
+				</el-button>
+				<el-button
+					@click="sortImgs"
+					size="small"
+					type="primary">
+					排序
+				</el-button>
 			</div>
 		</el-card>
+
+		<el-dialog
+			title="图片排序"
+			:visible.sync="dialogVisible"
+			width="60%"
+			:before-close="handleClose">
+			
+			<div>
+				<el-row type="flex" align="middle">
+					<draggable :list="imgList" @end="moveImgs">
+						<el-col
+							class="img-con"
+							v-for="img in imgList"
+							:key="img.name"
+							:span="4">
+							<img :src="img.url" class="img-gallery">
+						</el-col>
+					</draggable>
+				</el-row>
+			</div>
+
+			<span slot="footer" class="dialog-footer">
+				<span style="float: left">
+					<i class="el-icon-info"></i>
+					tips: 拖动图片进行排序，确认顺序后点击确定
+				</span>
+				<el-button @click="handleClose">取 消</el-button>
+				<el-button type="primary" @click="confirmMove">确 定</el-button>
+			</span>
+		</el-dialog>
 	</div>
 </template>
 
@@ -27,10 +67,15 @@
 	import { mapState, mapGetters } from 'vuex'
 	import axios from 'axios'
 
+	import draggable from 'vuedraggable'
+
 	export default {
 		props: [
 			'type'
 		],
+		components: {
+			draggable
+		},
 		computed: {
 			...mapGetters ({
 				imgs: 'product/imgs',
@@ -44,13 +89,15 @@
 		},
 		data() {
 			return {
+				dialogVisible: false,
 				formData: '',
 				fileNames: [],
 				config: {
 					headers: {
 						'Content-Type': 'multipart/form-data'
 					}
-				}
+				},
+				imgList: []
 			}
 		},
 		methods: {
@@ -60,13 +107,17 @@
 				this.formData.append('file', file.file);
 			},
 			async submitImgs () {
-				this.formData = new FormData()
-				this.$refs.upload.submit();
-				await this.$store.dispatch('uploadImgs/uploadImgs', {
-					formData: this.formData, config: this.config, type: this.type
-				})
-				await this.$store.dispatch('uploadImgs/upadteProduct', this.type)
-				await this.$store.dispatch('product/setEditProduct')
+				if (this.fileNames.length) {
+					this.formData = new FormData()
+					this.$refs.upload.submit();
+					await this.$store.dispatch('uploadImgs/uploadImgs', {
+						formData: this.formData, config: this.config, type: this.type
+					})
+					await this.$store.dispatch('uploadImgs/upadteProduct', this.type)
+					await this.$store.dispatch('product/setEditProduct')
+				} else {
+					this.$message('没有需要上传的图片')
+				}
 			},
 			async removeImg (file, fileList) {
 				const files = fileList.map(ele => { return { name: ele.name, url: ele.url } })
@@ -79,6 +130,32 @@
 					await this.$store.dispatch('uploadImgs/upadteProduct', this.type)
 					await this.$store.dispatch('product/setEditProduct')
 				}
+			},
+			sortImgs () {
+				const imgs = JSON.parse(JSON.stringify(this.imgs.map(ele => { return { name: ele.name, url: ele.url } })))
+				const detailImgs = JSON.parse(JSON.stringify(this.detailImgs.map(ele => { return { name: ele.name, url: ele.url } })))
+				this.imgList = this.type === 'details' ? detailImgs : imgs
+				if (this.imgList.length) {
+					this.dialogVisible = true
+				} else {
+					this.$message('没有可排序的图片')
+				}
+			},
+			moveImgs () {
+				console.log(this.imgList)
+			},
+			async confirmMove () {
+				const type = this.type
+				const imgList = this.imgList
+				await this.$store.dispatch('uploadImgs/updateProductImgIndex', { type, imgList })
+				await this.$store.dispatch('product/setEditProduct')
+				this.dialogVisible = false
+			},
+			handleClose (done) {
+				this.$confirm('确认关闭？').then(_ => {
+					this.dialogVisible = false
+					done()
+				}).catch(_ => {})
 			}
 		}
 	}
@@ -100,5 +177,19 @@
 	.el-upload-dragger {
 		align-items: center;
 		width: 100%;
+	}
+
+	.img-gallery {
+		width: auto;
+		height: auto;
+		max-width: 100%;
+		max-height: 100%;	
+	}
+
+	.img-con {
+		padding: 5px;
+		margin-right: 5px;
+		border: 1px solid #efefef;
+		border-radius: 10px;
 	}
 </style>
