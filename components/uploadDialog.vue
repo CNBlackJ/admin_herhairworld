@@ -79,7 +79,7 @@
 				this.$store.commit('uploadDialog/SET_IS_SHOW')
 			},
       handleImgSuccess(res, file) {
-				this.imageUrl = res.data[0]
+				this.imageUrl = res.data[0].url
 				if (this.imageUrl) {
 					this.$store.dispatch('uploadDialog/setImgUrl', this.imageUrl)
 				}

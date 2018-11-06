@@ -197,7 +197,7 @@
 													:value="item._id">
 												</el-option>
 											</el-select>
-											<div slot="reference" class="img-con" @click="changeCategoryImg(1)">
+											<div slot="reference" class="img-con" @click="changeCategoryImg(0)">
 												<img
 													:src="categories[0] ? categories[0].img : ''"
 													class="category-image">
@@ -219,7 +219,7 @@
 													:value="item._id">
 												</el-option>
 											</el-select>
-											<div slot="reference" class="img-con" @click="changeCategoryImg(2)">
+											<div slot="reference" class="img-con" @click="changeCategoryImg(1)">
 												<img
 													:src="categories[1] ? categories[1].img : ''"
 													class="category-image">
