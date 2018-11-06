@@ -153,41 +153,13 @@
 			<el-row :gutter="20">
 				<el-col :span="10">
 					<el-form-item label="产品图">
-						<el-card>
-							<div>
-								<el-upload
-									class="upload-demo"
-									:action="apiUrl + '/api/qiniu/upload'"
-									:on-preview="handlePreview"
-									:on-remove="handleRemoveProductImg"
-									:file-list="prod.imgs"
-									:on-success="handleProductsImgsSuccess"
-									list-type="picture">
-									<el-button size="small" type="primary">点击上传</el-button>
-									<div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
-								</el-upload>
-							</div>
-						</el-card>
+						<uploadImgs type="products"></uploadImgs>
 					</el-form-item>
 				</el-col>
 
 				<el-col :span="10">
 					<el-form-item label="详情图">
-						<el-card>
-							<div>
-								<el-upload
-									class="upload-demo"
-									:action="apiUrl + '/api/qiniu/upload'"
-									:on-preview="handlePreview"
-									:on-remove="handleRemoveDetailImg"
-									:file-list="prod.detailImgs.product"
-									:on-success="handleDetailImgsSuccess"
-									list-type="picture">
-									<el-button size="small" type="primary">点击上传</el-button>
-									<div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
-								</el-upload>
-							</div>
-						</el-card>
+						<uploadImgs type="details"></uploadImgs>
 					</el-form-item>
 				</el-col>
 			</el-row>
@@ -209,19 +181,25 @@
 <script>
 	import _ from 'lodash'
 	import { mapState } from 'vuex'
+	import axios from 'axios'
 
 	import product from '@/apis/product'
 	import category from '@/apis/category'
 
+	import uploadImgs from '@/components/uploadImgs'
+
 	export default {
-		props: [
-			'isEdit',
-			'prodId'
-		],
 		computed: {
 			...mapState({
-				apiUrl: state => state.apiUrl
+				apiUrl: state => state.apiUrl,
+				isEdit: state => state.product.isEdit,
+				editProductId: state => state.product.editProductId,
+				imgs: state => state.uploadImgs.imgs,
+				detailImgs: state => state.uploadImgs.detailImgs
 			})
+		},
+		components: {
+			uploadImgs
 		},
 		data() {
 			return {
@@ -300,7 +278,7 @@
 		},
 		methods: {
 			async getProduct () {
-				if (this.isEdit) this.prod = await product.getById(this.prodId)
+				if (this.isEdit) this.prod = await product.getById(this.editProductId)
 			},
       removeLenPrice(len) {
 				const lengths = [...this.prod.lengths]
@@ -329,11 +307,8 @@
 					if (valid) {
 						this.isLoading = true
 						// 更新图片字段
-						this.prod.imgs = this.prod.imgs.map(img => { return { name: img.name, url: img.url } })
-						const detailProductImgs = this.prod.detailImgs.product.map(img => {
-							return { name: img.name, url: img.url }
-						})
-						this.prod.detailImgs.product = detailProductImgs
+						this.prod.imgs = this.imgs
+						this.prod.detailImgs.product = this.detailImgs
 						await product.create(this.prod)
 						this.isLoading = false
 						this.$emit('closeAddProdForm')
@@ -383,37 +358,8 @@
 					}
 				});
 			},
-      handleRemoveDetailImg(file) {
-				const { name } = file
-				let index = -1
-				this.prod.detailImgs.product.forEach((ele, i) => {
-					if (ele.name !== name) index = i
-				})
-				if (index > -1) this.prod.detailImgs.product.splice(index, 1)
-      },
-      handleRemoveProductImg(file) {
-				const { name } = file
-				let index = -1
-				this.prod.imgs.forEach((ele, i) => {
-					if (ele.name !== name) index = i
-				})
-				if (index > -1) this.prod.imgs.splice(index, 1)
-      },
-      handlePreview(file) {
-        console.log(file);
-      },
 			handleMainImgSuccess(res, file) {
-				this.prod.mainImg = res.data[0]
-			},
-			handleProductsImgsSuccess (res, file, fileList) {
-				const url = res.data[0]
-				const payload = { name: file.name, url }
-				this.prod.imgs.push(payload)
-			},
-			handleDetailImgsSuccess (res, file, fileList) {
-				const url = res.data[0]
-				const payload = { name: file.name, url }
-				this.prod.detailImgs.product.push(payload)
+				this.prod.mainImg = res.data[0].url
 			},
       beforeMainImgUpload(file) {
         const isJPG = file.type === 'image/jpeg';

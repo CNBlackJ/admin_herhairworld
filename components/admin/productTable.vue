@@ -6,13 +6,11 @@
 			element-loading-spinner="el-icon-loading"
 			element-loading-background="hsla(0,0%,100%,.9)"
 			:data="products"
+			@expand-change="handleExpand"
 			style="width: 100%">
 			<el-table-column type="expand">
 				<template slot-scope="props">
-					<addProdForm
-						:isEdit=true
-						:prodId="props.row._id"
-						:categories="categories"></addProdForm>
+					<addProdForm></addProdForm>
 				</template>
 			</el-table-column>
 			<el-table-column
@@ -58,7 +56,7 @@
 </template>
 
 <script>
-	import { mapState } from 'vuex'
+	import { mapGetters, mapState } from 'vuex'
 	import _ from 'lodash'
 
 	import product from '@/apis/product'
@@ -70,9 +68,15 @@
 		components: {
 			addProdForm
 		},
-		computed: mapState({
-			products: state => state.product.products
-		}),
+		computed: {
+			...mapGetters ({
+				imgs: 'product/imgs',
+				detailImgs: 'product/detailImgs'
+			}),
+			...mapState({
+				products: state => state.product.products
+			})
+		},
 		data() {
 			return {
 				categories: [],
@@ -85,6 +89,16 @@
 			this.isLoading = false
 		},
 		methods: {
+			async handleExpand (row, expandedRows) {
+				this.$store.commit('product/SET_IS_EDIT', true)
+				this.$store.commit('product/SET_EDIT_PRODUCT_ID', row._id)
+				await this.$store.dispatch('product/setEditProduct')
+				this.$store.commit('uploadImgs/SET_NEW_IMGS', this.imgs.map(ele => { return { name: ele.name, url: ele.url } }))
+				this.$store.commit('uploadImgs/STE_NEW_DETAIL_IMGS', this.detailImgs.map(ele => { return { name: ele.name, url: ele.url } }))
+				if(expandedRows.length>1){
+          expandedRows.shift()
+        }
+			},
 			formatWeight (row, column) {
 				return `${row.minWeight} - ${row.maxWeight}`
 			},

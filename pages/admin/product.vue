@@ -6,7 +6,7 @@
 					<el-button
 						type="success" 
 						plain
-						@click="addProdDialogVisible = true">
+						@click="addProduct">
 						<i class="el-icon-circle-plus el-icon--right"></i>
 						添加产品
 					</el-button>
@@ -108,6 +108,11 @@
 			}
 		},
 		methods: {
+			addProduct () {
+				this.$store.commit('product/SET_IS_EDIT', false)
+				this.$store.commit('product/SET_EDIT_PRODUCT_ID', '')
+				this.addProdDialogVisible = true
+			},
 			searchProd () {
 				console.log('search prods')
 			},
