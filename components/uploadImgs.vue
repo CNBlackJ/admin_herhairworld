@@ -1,7 +1,11 @@
 <template>
 	<div class="upload-imgs-conatiner">
 		<el-card class="upload-imgs">
-			<div>
+			<div
+				v-loading="isUploading"
+				element-loading-text="拼命加载中"
+				element-loading-spinner="el-icon-loading"
+				element-loading-background="hsla(0,0%,100%,.9)">
 				<el-upload
 					class="upload-demo"
 					:action="apiUrl + '/api/qiniu/upload'"
@@ -93,6 +97,7 @@
 		},
 		data() {
 			return {
+				isUploading: false,
 				isLoading: false,
 				dialogVisible: false,
 				formData: '',
@@ -113,6 +118,7 @@
 			},
 			async submitImgs () {
 				if (this.fileNames.length) {
+					this.isUploading = true
 					this.formData = new FormData()
 					this.$refs.upload.submit();
 					await this.$store.dispatch('uploadImgs/uploadImgs', {
@@ -120,21 +126,22 @@
 					})
 					await this.$store.dispatch('uploadImgs/upadteProduct', this.type)
 					await this.$store.dispatch('product/setEditProduct')
+					this.isUploading = false
 				} else {
 					this.$message('没有需要上传的图片')
 				}
 			},
 			async removeImg (file, fileList) {
+				this.isUploading = true
 				const files = fileList.map(ele => { return { name: ele.name, url: ele.url } })
 				if (this.type === 'details') {
 					this.$store.commit('uploadImgs/STE_NEW_DETAIL_IMGS', files)
-					await this.$store.dispatch('uploadImgs/upadteProduct', this.type)
-					await this.$store.dispatch('product/setEditProduct')
 				} else if (this.type === 'products') {
 					this.$store.commit('uploadImgs/SET_NEW_IMGS', files)
-					await this.$store.dispatch('uploadImgs/upadteProduct', this.type)
-					await this.$store.dispatch('product/setEditProduct')
 				}
+				await this.$store.dispatch('uploadImgs/upadteProduct', this.type)
+				await this.$store.dispatch('product/setEditProduct')
+				this.isUploading = false
 			},
 			sortImgs () {
 				const imgs = JSON.parse(JSON.stringify(this.imgs.map(ele => { return { name: ele.name, url: ele.url } })))
