@@ -15,6 +15,7 @@
 					:auto-upload="false"
 					:http-request="uploadImgs"
 					:on-remove="removeImg"
+					:on-change="fileChange"
 					drag
 					ref="upload">
 					<i class="el-icon-upload"></i>
@@ -36,16 +37,16 @@
 		</el-card>
 
 		<el-dialog
-			v-loading="isLoading"
-			element-loading-text="拼命加载中"
-			element-loading-spinner="el-icon-loading"
-			element-loading-background="hsla(0,0%,100%,.9)"
 			title="图片排序"
 			:visible.sync="dialogVisible"
 			width="60%"
 			:before-close="handleClose">
 			
-			<div>
+			<div
+				v-loading="isLoading"
+				element-loading-text="拼命加载中"
+				element-loading-spinner="el-icon-loading"
+				element-loading-background="hsla(0,0%,100%,.9)">
 				<el-row type="flex" align="middle">
 					<draggable :list="imgList" @end="moveImgs">
 						<el-col
@@ -100,6 +101,7 @@
 				isUploading: false,
 				isLoading: false,
 				dialogVisible: false,
+				hasReadyImgs: false,
 				formData: '',
 				fileNames: [],
 				config: {
@@ -111,13 +113,16 @@
 			}
 		},
 		methods: {
+			fileChange (file, fileList) {
+				this.hasReadyImgs = fileList.find(ele => ele.status === 'ready')
+			},
 			uploadImgs (file) {
 				const fileName = file.file.name
 				if (fileName) this.fileNames.push(fileName)
 				this.formData.append('file', file.file);
 			},
 			async submitImgs () {
-				if (this.fileNames.length) {
+				if (this.hasReadyImgs) {
 					this.isUploading = true
 					this.formData = new FormData()
 					this.$refs.upload.submit();
@@ -127,6 +132,7 @@
 					await this.$store.dispatch('uploadImgs/upadteProduct', this.type)
 					await this.$store.dispatch('product/setEditProduct')
 					this.isUploading = false
+					this.hasReadyImgs = false
 				} else {
 					this.$message('没有需要上传的图片')
 				}
