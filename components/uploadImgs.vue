@@ -32,6 +32,10 @@
 		</el-card>
 
 		<el-dialog
+			v-loading="isLoading"
+			element-loading-text="拼命加载中"
+			element-loading-spinner="el-icon-loading"
+			element-loading-background="hsla(0,0%,100%,.9)"
 			title="图片排序"
 			:visible.sync="dialogVisible"
 			width="60%"
@@ -89,6 +93,7 @@
 		},
 		data() {
 			return {
+				isLoading: false,
 				dialogVisible: false,
 				formData: '',
 				fileNames: [],
@@ -145,10 +150,12 @@
 				console.log(this.imgList)
 			},
 			async confirmMove () {
+				this.isLoading = true
 				const type = this.type
 				const imgList = this.imgList
 				await this.$store.dispatch('uploadImgs/updateProductImgIndex', { type, imgList })
 				await this.$store.dispatch('product/setEditProduct')
+				this.isLoading = false
 				this.dialogVisible = false
 			},
 			handleClose (done) {
