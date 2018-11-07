@@ -86,7 +86,7 @@
 						</div>
 					</el-form-item>
 				</el-col>
-				<el-col :span="14">
+				<el-col :span="18">
 					<el-form-item label="长度 / 价格">
 						<el-card>
 							<el-tag
@@ -150,14 +150,16 @@
 				</el-col>
 			</el-row>
 	
-			<el-row :gutter="20">
-				<el-col :span="10">
+			<el-row>
+				<el-col :span="24">
 					<el-form-item label="产品图">
 						<uploadImgs type="products"></uploadImgs>
 					</el-form-item>
 				</el-col>
+			</el-row>
 
-				<el-col :span="10">
+			<el-row>
+				<el-col :span="24">
 					<el-form-item label="详情图">
 						<uploadImgs type="details"></uploadImgs>
 					</el-form-item>
@@ -348,10 +350,10 @@
 			updateProd (formName) {
 				this.$refs[formName].validate(async (valid) => {
 					if (valid) {
-						this.prod.imgs = this.prod.imgs.map(img => {
+						this.prod.imgs = this.imgs.map(img => {
 							return { name: img.name, url: img.url }
 						})
-						const detailProductImgs = this.prod.detailImgs.product.map(img => {
+						const detailProductImgs = this.detailImgs.map(img => {
 							return { name: img.name, url: img.url }
 						})
 						this.prod.detailImgs.product = detailProductImgs

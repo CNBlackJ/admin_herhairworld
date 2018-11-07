@@ -1,11 +1,8 @@
-import axios from 'axios'
 import product from '@/apis/product'
 
 export const state = () => ({
   detailImgs: [],
-  imgs: [],
-  newImgs: [],
-  newDetailImgs: []
+  imgs: []
 })
 
 export const mutations = {
@@ -14,28 +11,10 @@ export const mutations = {
   },
   STE_DETAIL_IMGS (state, detailImgs) {
     state.detailImgs = detailImgs
-  },
-  SET_NEW_IMGS (state, newImgs) {
-    state.newImgs = newImgs
-  },
-  STE_NEW_DETAIL_IMGS (state, newDetailImgs) {
-    state.newDetailImgs = newDetailImgs
   }
 }
 
 export const actions = {
-  async setFiles ({ commit }, imgUrl) {
-    commit('SET_IMG_URL', imgUrl)
-  },
-  async uploadImgs ({ commit, rootState }, { formData, config, type }) {
-    const resp = (await axios.post(rootState.apiUrl + '/api/qiniu/upload', formData, config)).data
-    const files = resp.data
-    if (type === 'details') {
-      commit('STE_DETAIL_IMGS', files)
-    } else if (type === 'products') {
-      commit('SET_IMGS', files)
-    }
-  },
   async updateProduct ({ state, rootState }, type) {
     const editProductId = rootState.product.editProductId
     const isEdit = rootState.product.isEdit
@@ -60,5 +39,15 @@ export const actions = {
       Object.assign(payload, { imgs: imgList })
     }
     await product.update({ prod: payload })
+  },
+  pushIntoImgs ({ state, commit }, imgFile) {
+    const imgs = JSON.parse(JSON.stringify(state.imgs))
+    imgs.push(imgFile)
+    commit('SET_IMGS', imgs)
+  },
+  pushIntoDetailImgs ({ state, commit }, imgFile) {
+    const detailImgs = JSON.parse(JSON.stringify(state.detailImgs))
+    detailImgs.push(imgFile)
+    commit('STE_DETAIL_IMGS', detailImgs)
   }
 }

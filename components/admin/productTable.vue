@@ -92,9 +92,9 @@
 			async handleExpand (row, expandedRows) {
 				this.$store.commit('product/SET_IS_EDIT', true)
 				this.$store.commit('product/SET_EDIT_PRODUCT_ID', row._id)
+				this.$store.commit('uploadImgs/SET_IMGS', row.imgs)
+				this.$store.commit('uploadImgs/STE_DETAIL_IMGS', row.detailImgs.product)
 				await this.$store.dispatch('product/setEditProduct')
-				this.$store.commit('uploadImgs/SET_NEW_IMGS', this.imgs.map(ele => { return { name: ele.name, url: ele.url } }))
-				this.$store.commit('uploadImgs/STE_NEW_DETAIL_IMGS', this.detailImgs.map(ele => { return { name: ele.name, url: ele.url } }))
 				if(expandedRows.length>1){
           expandedRows.shift()
         }
