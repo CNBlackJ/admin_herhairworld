@@ -36,7 +36,7 @@ export const actions = {
       commit('SET_IMGS', files)
     }
   },
-  async upadteProduct ({ state, rootState }, type) {
+  async updateProduct ({ state, rootState }, type) {
     const editProductId = rootState.product.editProductId
     const isEdit = rootState.product.isEdit
     if (isEdit) {

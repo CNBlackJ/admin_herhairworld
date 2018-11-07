@@ -172,7 +172,7 @@
 				<el-button v-if="!isEdit" type="primary" @click="createProd('prod')">立即创建</el-button>
 				<el-button v-if="!isEdit" @click="resetForm('prod')">重置</el-button>
 				<el-button type="primary" v-if="isEdit" @click="updateProd('prod')">立即更新</el-button>
-				<el-button type="danger" v-if="isEdit" @click="deleteProd()">删除</el-button>
+				<el-button type="danger" v-if="isEdit" @click="deleteProd">删除</el-button>
 			</el-form-item>
 		</el-form>
 	</div>
@@ -208,27 +208,7 @@
         priceLenVisible: false,
 				price: 0,
 				length: 0,
-				prod: {
-					model: `test model name ${new Date()}`,
-					name: `test product name ${new Date()}`,
-					quantity: 999,
-					orderMin: 1,
-					material: '100% Human Hair',
-					package: '1pcs/lot(100g)',
-					originPrice: 199,
-					price: 99,
-					color: 'Natural Color',
-					mainImg: '',
-					category: '',
-					imgs: [],
-					detailImgs: {
-						product: []
-					},
-					minWeight: 90,
-					maxWeight: 110,
-					online: true,
-					lengths: []
-				},
+				prod: {},
 				rules: {
 					name: [
 						{ required: true, message: '请输入产品名称', trigger: 'blur' },
@@ -278,7 +258,31 @@
 		},
 		methods: {
 			async getProduct () {
-				if (this.isEdit) this.prod = await product.getById(this.editProductId)
+				if (this.isEdit) {
+					this.prod = await product.getById(this.editProductId)
+				} else {
+					this.prod = {
+						model: `test model name ${new Date()}`,
+						name: `test product name ${new Date()}`,
+						quantity: 999,
+						orderMin: 1,
+						material: '100% Human Hair',
+						package: '1pcs/lot(100g)',
+						originPrice: 199,
+						price: 99,
+						color: 'Natural Color',
+						mainImg: '',
+						category: '',
+						imgs: [],
+						detailImgs: {
+							product: []
+						},
+						minWeight: 90,
+						maxWeight: 110,
+						online: true,
+						lengths: []
+					}
+				}
 			},
       removeLenPrice(len) {
 				const lengths = [...this.prod.lengths]
@@ -329,8 +333,12 @@
 			deleteProd () {
 				this.$confirm(`确认删除商品：${this.prod.name} ？`)
           .then(_ => {
-            product.deleteById({ id: this.prod._id }).then(() => {
-							console.log('success to delete')
+            product.deleteById({ id: this.prod._id }).then(async () => {
+							this.$message({
+								message: '删除产品成功',
+								type: 'success'
+							});
+							await this.$store.dispatch('product/listProducts')
 						}).catch((err) => {
 							console.log(`deleteProd: ${JSON.stringify(err)}`)
 						})

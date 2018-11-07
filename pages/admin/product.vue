@@ -111,6 +111,11 @@
 			addProduct () {
 				this.$store.commit('product/SET_IS_EDIT', false)
 				this.$store.commit('product/SET_EDIT_PRODUCT_ID', '')
+				this.$store.commit('product/SET_EDIT_PRODUCT', {})
+				this.$store.commit('uploadImgs/STE_DETAIL_IMGS', [])
+				this.$store.commit('uploadImgs/SET_IMGS', [])
+				this.$store.commit('uploadImgs/STE_NEW_DETAIL_IMGS', [])
+				this.$store.commit('uploadImgs/SET_NEW_IMGS', [])
 				this.addProdDialogVisible = true
 			},
 			searchProd () {

@@ -109,7 +109,8 @@
 						'Content-Type': 'multipart/form-data'
 					}
 				},
-				imgList: []
+				imgList: [],
+				detailImgList: []
 			}
 		},
 		methods: {
@@ -129,8 +130,10 @@
 					await this.$store.dispatch('uploadImgs/uploadImgs', {
 						formData: this.formData, config: this.config, type: this.type
 					})
-					await this.$store.dispatch('uploadImgs/upadteProduct', this.type)
-					await this.$store.dispatch('product/setEditProduct')
+					if (this.isEdit) {
+						await this.$store.dispatch('uploadImgs/updateProduct', this.type)
+						await this.$store.dispatch('product/setEditProduct')
+					}
 					this.isUploading = false
 					this.hasReadyImgs = false
 				} else {
@@ -145,7 +148,7 @@
 				} else if (this.type === 'products') {
 					this.$store.commit('uploadImgs/SET_NEW_IMGS', files)
 				}
-				await this.$store.dispatch('uploadImgs/upadteProduct', this.type)
+				await this.$store.dispatch('uploadImgs/updateProduct', this.type)
 				await this.$store.dispatch('product/setEditProduct')
 				this.isUploading = false
 			},
