@@ -4,12 +4,16 @@ export const state = () => ({
   products: [],
   isEdit: false,
   editProductId: '',
-  editProduct: {}
+  editProduct: {},
+  count: 0
 })
 
 export const mutations = {
   SET_PRODUCTS (state, products) {
     state.products = products
+  },
+  SET_COUNT (state, count) {
+    state.count = count
   },
   SET_IS_EDIT (state, isEdit) {
     state.isEdit = isEdit || false
@@ -23,9 +27,10 @@ export const mutations = {
 }
 
 export const actions = {
-  async listProducts ({ commit }) {
-    const products = await product.list({})
-    commit('SET_PRODUCTS', products)
+  async listProducts ({ commit }, { limit = 10, skip = 0 }) {
+    const { rows, count } = await product.list({ limit, skip })
+    commit('SET_PRODUCTS', rows)
+    commit('SET_COUNT', count)
   },
   async setEditProduct ({ state, commit }) {
     const editProduct = await product.getById(state.editProductId)

@@ -322,7 +322,7 @@
 							message: '新增产品成功',
 							type: 'success'
 						});
-						await this.$store.dispatch('product/listProducts')
+						await this.$store.dispatch('product/listProducts', {})
 					} else {
 						console.log('error submit!!')
 						return false;
@@ -340,7 +340,7 @@
 								message: '删除产品成功',
 								type: 'success'
 							});
-							await this.$store.dispatch('product/listProducts')
+							await this.$store.dispatch('product/listProducts', {})
 						}).catch((err) => {
 							console.log(`deleteProd: ${JSON.stringify(err)}`)
 						})
@@ -362,7 +362,7 @@
 							message: '更新产品成功',
 							type: 'success'
 						});
-						await this.$store.dispatch('product/listProducts')
+						await this.$store.dispatch('product/listProducts', {})
 					} else {
 						return false;
 					}

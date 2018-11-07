@@ -84,7 +84,7 @@
 			}
 		},
 		async created () {
-			await this.$store.dispatch('product/listProducts')
+			await this.$store.dispatch('product/listProducts', {})
 			this.categories = await category.list({})
 			this.isLoading = false
 		},

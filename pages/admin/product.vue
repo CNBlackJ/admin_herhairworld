@@ -56,6 +56,15 @@
 
 		<productTable></productTable>
 
+		<div class="products-pagination">
+			<el-pagination
+				background
+				layout="prev, pager, next"
+				:total="count"
+				@current-change="currentChange">
+			</el-pagination>
+		</div>
+
 		<el-dialog
 			title="添加产品"
 			:visible.sync="addProdDialogVisible"
@@ -84,6 +93,8 @@
 </template>
 
 <script>
+	import { mapState } from 'vuex'
+
 	import productTable from '@/components/admin/productTable'
 	import addProdForm from '@/components/admin/addProdForm'
 
@@ -92,6 +103,11 @@
 		components: {
 			productTable,
 			addProdForm
+		},
+		computed: {
+			...mapState({
+				count: state => state.product.count
+			})
 		},
 		data () {
 			return {
@@ -125,7 +141,11 @@
             done();
           })
           .catch(_ => {});
-      },
+			},
+			async currentChange (currentPage) {
+				const pageSize = 10
+				await this.$store.dispatch('product/listProducts', { skip: (currentPage-1) * pageSize, limit: pageSize })
+			}
 		}
 	}
 </script>
@@ -138,5 +158,10 @@
 
 	.prod-sub-menu {
 		border-bottom: 1px solid #efefef;
+	}
+
+	.products-pagination {
+		padding: 10px;
+		text-align: center;
 	}
 </style>
