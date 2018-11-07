@@ -6,75 +6,55 @@
 				element-loading-text="拼命加载中"
 				element-loading-spinner="el-icon-loading"
 				element-loading-background="hsla(0,0%,100%,.9)">
-				<el-upload
-					class="upload-demo"
-					:action="apiUrl + '/api/qiniu/upload'"
-					list-type="picture"
-					:file-list="this.type === 'details' ? detailImgs : imgs"
-					:multiple="true"
-					:auto-upload="false"
-					:http-request="uploadImgs"
-					:on-remove="removeImg"
-					:on-change="fileChange"
-					drag
-					ref="upload">
-					<i class="el-icon-upload"></i>
-					<div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-				</el-upload>
-				<el-button
-					@click="submitImgs"
-					size="small"
-					type="warning">
-					点击立即上传
-				</el-button>
-				<el-button
-					@click="sortImgs"
-					size="small"
-					type="primary">
-					排序
-				</el-button>
-			</div>
-		</el-card>
-
-		<el-dialog
-			title="图片排序"
-			:visible.sync="dialogVisible"
-			width="60%"
-			:before-close="handleClose">
-			
-			<div
-				v-loading="isLoading"
-				element-loading-text="拼命加载中"
-				element-loading-spinner="el-icon-loading"
-				element-loading-background="hsla(0,0%,100%,.9)">
-				<el-row type="flex" align="middle">
-					<draggable :list="imgList" @end="moveImgs">
-						<el-col
-							class="img-con"
-							v-for="img in imgList"
-							:key="img.name"
-							:span="4">
-							<img :src="img.url" class="img-gallery">
-						</el-col>
-					</draggable>
+				<el-row>
+					<el-col :span="5">
+						<el-upload
+							:action="apiUrl + '/api/qiniu/upload'"
+							list-type="picture"
+							:multiple="true"
+							:show-file-list="false"
+							:on-success="handleImgSuccess"
+							drag>
+							<i class="el-icon-upload"></i>
+							<div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+						</el-upload>
+					</el-col>
+					<el-col :span="18" :offset="1">
+						<div>
+							<el-row type="flex" align="middle">
+								<draggable :list="imgList" @end="moveImgs">
+									<el-col
+										class="img-con"
+										v-for="(img, i) in imgList"
+										:key="img.name"
+										:span="4">
+										<div
+											@mouseover="deleteBtnId=i"
+											@mouseout="deleteBtnId=''">
+											<i
+												v-if="deleteBtnId===i"
+												@click="removeImg(i)"
+												class="el-icon-delete img-layer">
+											</i>
+											<img
+												:src="img.url"
+												class="img-gallery">
+										</div>
+									</el-col>
+								</draggable>
+							</el-row>
+						</div>
+					</el-col>
 				</el-row>
 			</div>
-
-			<span slot="footer" class="dialog-footer">
-				<span style="float: left">
-					<i class="el-icon-info"></i>
-					tips: 拖动图片进行排序，确认顺序后点击确定
-				</span>
-				<el-button @click="handleClose">取 消</el-button>
-				<el-button type="primary" @click="confirmMove">确 定</el-button>
-			</span>
-		</el-dialog>
+		</el-card>
 	</div>
 </template>
 
 <script>
 	import { mapState, mapGetters } from 'vuex'
 	import axios from 'axios'
+	import _ from 'lodash'
 
 	import draggable from 'vuedraggable'
 
@@ -86,22 +66,19 @@
 			draggable
 		},
 		computed: {
-			...mapGetters ({
-				imgs: 'product/imgs',
-				detailImgs: 'product/detailImgs'
-			}),
 			...mapState({
 				apiUrl: state => state.apiUrl,
 				isEdit: state => state.product.isEdit,
-				editProduct: state => state.product.editProduct
+				editProduct: state => state.product.editProduct,
+				imgs: state => state.uploadImgs.imgs,
+				detailImgs: state => state.uploadImgs.detailImgs
 			})
 		},
 		data() {
 			return {
 				isUploading: false,
 				isLoading: false,
-				dialogVisible: false,
-				hasReadyImgs: false,
+				deleteBtnId: '',
 				formData: '',
 				fileNames: [],
 				config: {
@@ -109,76 +86,62 @@
 						'Content-Type': 'multipart/form-data'
 					}
 				},
-				imgList: [],
-				detailImgList: []
+				imgList: []
 			}
 		},
+		created () {
+			this.getImgsList()
+		},
 		methods: {
-			fileChange (file, fileList) {
-				this.hasReadyImgs = fileList.find(ele => ele.status === 'ready')
+			getImgsList () {
+				const type = this.type
+				if (type === 'products') {
+					this.imgList = JSON.parse(JSON.stringify(this.imgs.map(ele => { return { name: ele.name, url: ele.url } })))
+				} else if (type === 'details') {
+					this.imgList = JSON.parse(JSON.stringify(this.detailImgs.map(ele => { return { name: ele.name, url: ele.url } })))
+				}
 			},
-			uploadImgs (file) {
-				const fileName = file.file.name
-				if (fileName) this.fileNames.push(fileName)
-				this.formData.append('file', file.file);
-			},
-			async submitImgs () {
-				if (this.hasReadyImgs) {
-					this.isUploading = true
-					this.formData = new FormData()
-					this.$refs.upload.submit();
-					await this.$store.dispatch('uploadImgs/uploadImgs', {
-						formData: this.formData, config: this.config, type: this.type
-					})
-					if (this.isEdit) {
-						await this.$store.dispatch('uploadImgs/updateProduct', this.type)
-						await this.$store.dispatch('product/setEditProduct')
+			async handleImgSuccess (response, file, fileList) {
+				const type = this.type
+				if (this.isEdit) {
+					if (type === 'details') {
+						this.$store.dispatch('uploadImgs/pushIntoDetailImgs', response.data[0])
+					} else if (type === 'products') {
+						this.$store.dispatch('uploadImgs/pushIntoImgs', response.data[0])
 					}
-					this.isUploading = false
-					this.hasReadyImgs = false
 				} else {
-					this.$message('没有需要上传的图片')
+					const files = []
+					fileList.forEach(ele => {
+						if (ele.response && ele.response.data[0]) {
+							files.push(ele.response.data[0]) 
+						}
+					})
+					if (type === 'details') {
+						this.$store.commit('uploadImgs/STE_DETAIL_IMGS', files)
+					} else if (type === 'products') {
+						this.$store.commit('uploadImgs/SET_IMGS', files)
+					}
 				}
+				this.getImgsList()
 			},
-			async removeImg (file, fileList) {
-				this.isUploading = true
-				const files = fileList.map(ele => { return { name: ele.name, url: ele.url } })
-				if (this.type === 'details') {
-					this.$store.commit('uploadImgs/STE_NEW_DETAIL_IMGS', files)
-				} else if (this.type === 'products') {
-					this.$store.commit('uploadImgs/SET_NEW_IMGS', files)
+			removeImg (index) {
+				const type = this.type
+				const imgList = JSON.parse(JSON.stringify(this.imgList))
+				_.remove(imgList, (ele, i) => i === index)
+				if (type === 'details') {
+					this.$store.commit('uploadImgs/STE_DETAIL_IMGS', imgList)
+				} else if (type === 'products') {
+					this.$store.commit('uploadImgs/SET_IMGS', imgList)
 				}
-				await this.$store.dispatch('uploadImgs/updateProduct', this.type)
-				await this.$store.dispatch('product/setEditProduct')
-				this.isUploading = false
-			},
-			sortImgs () {
-				const imgs = JSON.parse(JSON.stringify(this.imgs.map(ele => { return { name: ele.name, url: ele.url } })))
-				const detailImgs = JSON.parse(JSON.stringify(this.detailImgs.map(ele => { return { name: ele.name, url: ele.url } })))
-				this.imgList = this.type === 'details' ? detailImgs : imgs
-				if (this.imgList.length) {
-					this.dialogVisible = true
-				} else {
-					this.$message('没有可排序的图片')
-				}
+				this.getImgsList()
 			},
 			moveImgs () {
-				console.log(this.imgList)
-			},
-			async confirmMove () {
-				this.isLoading = true
 				const type = this.type
-				const imgList = this.imgList
-				await this.$store.dispatch('uploadImgs/updateProductImgIndex', { type, imgList })
-				await this.$store.dispatch('product/setEditProduct')
-				this.isLoading = false
-				this.dialogVisible = false
-			},
-			handleClose (done) {
-				this.$confirm('确认关闭？').then(_ => {
-					this.dialogVisible = false
-					done()
-				}).catch(_ => {})
+				if (type === 'details') {
+					this.$store.commit('uploadImgs/STE_DETAIL_IMGS', JSON.parse(JSON.stringify(this.imgList)))
+				} else if (type === 'products') {
+					this.$store.commit('uploadImgs/SET_IMGS', JSON.parse(JSON.stringify(this.imgList)))
+				}
 			}
 		}
 	}
@@ -210,9 +173,21 @@
 	}
 
 	.img-con {
-		padding: 5px;
 		margin-right: 5px;
-		border: 1px solid #efefef;
-		border-radius: 10px;
+		position: relative;
+	}
+
+	.img-layer {
+		text-align: center;
+    position: absolute;
+    height: auto;
+    width: auto;
+		background-color: #F56C6C;
+		padding: 5px;
+    top: -8px;
+		right: -6px;
+    z-index: 1;
+		color: white;
+		border-radius: 50%;
 	}
 </style>
