@@ -309,8 +309,23 @@
 				this.price = 0
 			},
 			createProd(formName) {
+				let isValid = true
+				if (!this.prod.lengths.length) {
+					isValid = false
+					this.$message({
+						message: '输入尺寸和价格',
+						type: 'warning'
+					});
+				}
+				if (!this.prod.mainImg) {
+					isValid = false
+					this.$message({
+						message: '上传封面图',
+						type: 'warning'
+					});
+				}
 				this.$refs[formName].validate(async (valid) => {
-					if (valid) {
+					if (valid && isValid) {
 						this.isLoading = true
 						// 更新图片字段
 						this.prod.imgs = this.imgs
@@ -348,8 +363,23 @@
           .catch(_ => {});
 			},
 			updateProd (formName) {
+				let isValid = true
+				if (!this.prod.lengths.length) {
+					isValid = false
+					this.$message({
+						message: '输入尺寸和价格',
+						type: 'warning'
+					});
+				}
+				if (!this.prod.mainImg) {
+					isValid = false
+					this.$message({
+						message: '上传封面图',
+						type: 'warning'
+					});
+				}
 				this.$refs[formName].validate(async (valid) => {
-					if (valid) {
+					if (valid && isValid) {
 						this.prod.imgs = this.imgs.map(img => {
 							return { name: img.name, url: img.url }
 						})

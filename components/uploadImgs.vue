@@ -14,6 +14,7 @@
 							:multiple="true"
 							:show-file-list="false"
 							:on-success="handleImgSuccess"
+							:on-progress="uploadingImgs"
 							drag>
 							<i class="el-icon-upload"></i>
 							<div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
@@ -93,6 +94,9 @@
 			this.getImgsList()
 		},
 		methods: {
+			uploadingImgs () {
+				this.isUploading = true
+			},
 			getImgsList () {
 				const type = this.type
 				if (type === 'products') {
@@ -123,6 +127,7 @@
 					}
 				}
 				this.getImgsList()
+				this.isUploading = false
 			},
 			removeImg (index) {
 				const type = this.type
