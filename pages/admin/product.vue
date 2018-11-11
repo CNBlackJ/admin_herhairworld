@@ -69,7 +69,12 @@
 			</el-row>
 		</div>
 
-		<productTable></productTable>
+		<productTable
+			v-loading="isLoading"
+			element-loading-text="拼命加载中"
+			element-loading-spinner="el-icon-loading"
+			element-loading-background="hsla(0,0%,100%,.9)"
+			></productTable>
 
 		<div class="products-pagination">
 			<el-pagination
@@ -127,6 +132,7 @@
 		},
 		data () {
 			return {
+				isLoading: false,
 				uploadDialogVisible: false,
 				addProdDialogVisible: false,
 				searchCondition: {
@@ -151,7 +157,9 @@
 				this.addProdDialogVisible = true
 			},
 			async searchProd () {
+				this.isLoading = true
 				await this.$store.dispatch('product/searchProducts', this.searchCondition)
+				this.isLoading = false
 			},
       handleClose(done) {
         this.$confirm('确认关闭？')
