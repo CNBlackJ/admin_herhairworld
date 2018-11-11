@@ -8,8 +8,10 @@ export default class inquiry {
 
   static async list ({ limit, skip, sort }) {
     const queryStr = `?limit=${limit || 20}&skip=${skip || 0}&sort=${sort || '-createdAt'}`
-    const resp = await request.get(`/api/inquiries${queryStr}`)
-    return resp.data
+    const resp = (await request.get(`/api/inquiries${queryStr}`)).data
+    let results = []
+    if (!resp.error_code) results = resp.data
+    return results
   }
 
   static async update ({ inquiry }) {

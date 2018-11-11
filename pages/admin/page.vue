@@ -178,7 +178,12 @@
 						</span>
 						<i class="el-icon-info" style="float: right; padding: 3px 0"></i>
 					</div>
-					<div class="category-container">
+					<div
+						v-loading="isLoading"
+						element-loading-text="拼命加载中"
+						element-loading-spinner="el-icon-loading"
+						element-loading-background="hsla(0,0%,100%,.9)"
+						class="category-container">
 						<el-row>
 							<el-col :span="12">
 								<el-row>

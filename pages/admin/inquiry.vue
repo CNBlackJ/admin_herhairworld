@@ -1,5 +1,5 @@
 <template>
-	<div class="products-container">
+	<div class="inquiry-container">
 		<el-table
 			v-loading="isLoading"
 			element-loading-text="拼命加载中"
@@ -53,7 +53,16 @@
 					</el-button>
 				</template>
 			</el-table-column>
-    </el-table>
+		</el-table>
+		
+		<div class="inquiry-pagination">
+			<el-pagination
+				background
+				layout="prev, pager, next"
+				:total="count"
+				@current-change="currentChange">
+			</el-pagination>
+		</div>
 	</div>
 </template>
 
@@ -66,16 +75,19 @@
 		data () {
 			return {
 				isLoading: true,
-				inquiryList: []
+				inquiryList: [],
+				count: 0
 			}
 		},
-		created () {
-			this.listInquiries()
+		async created () {
+			await this.listInquiries({})
 		},
 		methods: {
-			async listInquiries () {
-				const resp = await inquiry.list({})
-				this.inquiryList = resp.data
+			async listInquiries ({ limit = 10, skip = 0 }) {
+				const resp = await inquiry.list({ limit, skip })
+				const { count, rows } = resp
+				this.inquiryList = rows
+				this.count = count
 				this.isLoading = false
 			},
 			deleteInquiryUser (inquiryInfo) {
@@ -87,13 +99,22 @@
 			},
 			formatDate (row, col) {
 				return moment(row.createdAt).format('YYYY-MM-DD HH:mm')
+			},
+			async currentChange (currentPage) {
+				const pageSize = 10
+				await this.listInquiries({ skip: (currentPage-1) * pageSize, limit: pageSize })
 			}
 		}
 	}
 </script>
 
 <style>
-	.products-container {
+	.inquiry-container {
 		width: 100%;
+	}
+
+	.inquiry-pagination {
+		padding: 10px;
+		text-align: center;
 	}
 </style>
