@@ -1,5 +1,20 @@
 <template>
 	<div class="inquiry-container">
+
+		<div class="inquiry-sub-menu">
+			<el-row style="margin-bottom: 10px;">
+				<el-col :xl="2" :lg="3">
+					<el-button
+						type="success"
+						disabled
+						plain>
+						<i class="el-icon-circle-plus el-icon--right"></i>
+						导出数据
+					</el-button>
+				</el-col>
+			</el-row>
+		</div>
+
 		<el-table
 			v-loading="isLoading"
 			element-loading-text="拼命加载中"
@@ -116,5 +131,9 @@
 	.inquiry-pagination {
 		padding: 10px;
 		text-align: center;
+	}
+
+	.inquiry-sub-menu {
+		border-bottom: 1px solid #efefef;
 	}
 </style>
