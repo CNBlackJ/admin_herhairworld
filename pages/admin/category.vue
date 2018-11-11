@@ -121,7 +121,8 @@
 		layout: 'admin',
 		computed: {
 			...mapState({
-				apiUrl: state => state.apiUrl
+				apiUrl: state => state.apiUrl,
+				categories: state => state.category.categories
 			})
 		},
 		data() {
@@ -133,35 +134,31 @@
 					name: '',
 					img: '',
 					index: 0
-				},
-				categories: []
+				}
 			}
 		},
 		async created () {
-			await this.listCategory()
+			await this.$store.dispatch('category/setCategories', { sort: 'index' })
 			this.isLoading = false
 		},
 		methods: {
-			async listCategory () {
-				this.categories = await category.list({ sort: 'index' })
-			},
 			async createCategory () {
 				this.isLoading = true
 				await category.create({ category: this.categoryObj })
-				await this.listCategory()
+				await this.$store.dispatch('category/setCategories', { sort: 'index' })
 				this.addCategoryVisible = false
 				this.isLoading = false
 			},
 			async updateCategory () {
 				await category.update({ category: this.categoryObj })
-				await this.listCategory()
+				await this.$store.dispatch('category/setCategories', { sort: 'index' })
 				this.addCategoryVisible = false
 				this.isEdit = false
 				this.isLoading = false
 			},
 			async deleteCategory (row) {
 				await category.delete({ category: row })
-				await this.listCategory()
+				await this.$store.dispatch('category/setCategories', { sort: 'index' })
 			},
 			editCategory (row) {
 				this.addCategoryVisible = true

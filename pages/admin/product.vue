@@ -29,25 +29,40 @@
 							<el-input v-model="searchCondition.name" placeholder="产品名称"></el-input>
 						</el-form-item>
 						<el-form-item label="产品类型">
-							<el-select v-model="searchCondition.type" placeholder="产品类型">
-								<el-option label="类型1" value="longHair"></el-option>
-								<el-option label="类型2" value="shortHair"></el-option>
+							<el-select v-model="searchCondition.categoryId" placeholder="产品类型">
+								<el-option
+									v-for="category in categories"
+									v-if="category.name !== 'All'"
+									:key="category._id"
+									:label="category.name"
+									:value="category._id">
+								</el-option>
 							</el-select>
 						</el-form-item>
 						<el-form-item label="价格范围">
-							<el-col :span="11">
-								<el-input v-model="searchCondition.minPrice" placeholder="输入价格"></el-input>
+							<el-col :span="10">
+								<el-input-number
+									:precision="2"
+									v-model="searchCondition.minPrice"
+									:min="0"
+									size="small">
+								</el-input-number>
 							</el-col>
-							<el-col style="text-align:center" :span="2">-</el-col>
-							<el-col :span="11">
-								<el-input v-model="searchCondition.maxPrice" placeholder="输入价格"></el-input>
+							<el-col style="text-align:center" :span="1" :offset="2">-</el-col>
+							<el-col :span="10">
+								<el-input-number
+									:precision="2"
+									v-model="searchCondition.maxPrice"
+									:min="0"
+									size="small">
+								</el-input-number>
 							</el-col>
 						</el-form-item>
 						<el-form-item label="库存状态" prop="delivery">
 							<el-switch v-model="searchCondition.stock"></el-switch>
 						</el-form-item>
 						<el-form-item>
-							<el-button type="primary" @click="searchProd">查询</el-button>
+							<el-button size="small" type="primary" @click="searchProd">查询</el-button>
 						</el-form-item>
 					</el-form>
 				</el-col>
@@ -106,7 +121,8 @@
 		},
 		computed: {
 			...mapState({
-				count: state => state.product.count
+				count: state => state.product.count,
+				categories: state => state.category.categories
 			})
 		},
 		data () {
@@ -115,13 +131,15 @@
 				addProdDialogVisible: false,
 				searchCondition: {
 					name: '',
-					type: '',
-					size: '',
-					minPrice: '',
-					maxPrice: '',
-					stock: ''
+					categoryId: '',
+					minPrice: 0,
+					maxPrice: 20,
+					stock: true
 				}
 			}
+		},
+		async created () {
+			await this.$store.dispatch('category/setCategories', { sort: 'index' })
 		},
 		methods: {
 			addProduct () {
@@ -132,8 +150,8 @@
 				this.$store.commit('uploadImgs/SET_IMGS', [])
 				this.addProdDialogVisible = true
 			},
-			searchProd () {
-				console.log('search prods')
+			async searchProd () {
+				await this.$store.dispatch('product/searchProducts', this.searchCondition)
 			},
       handleClose(done) {
         this.$confirm('确认关闭？')

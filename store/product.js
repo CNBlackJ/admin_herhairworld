@@ -32,6 +32,19 @@ export const actions = {
     commit('SET_PRODUCTS', rows)
     commit('SET_COUNT', count)
   },
+  async searchProducts ({ commit }, { limit = 10, skip = 0, categoryId, minPrice, maxPrice, stock, name }) {
+    const { rows, count } = await product.search({
+      limit,
+      skip,
+      categoryId,
+      minPrice,
+      maxPrice,
+      stock,
+      search: name
+    })
+    commit('SET_PRODUCTS', rows)
+    commit('SET_COUNT', count)
+  },
   async setEditProduct ({ state, commit }) {
     const editProduct = await product.getById(state.editProductId)
     commit('SET_EDIT_PRODUCT', editProduct)

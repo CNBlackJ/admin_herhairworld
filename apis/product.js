@@ -15,6 +15,15 @@ export default class product {
     return results
   }
 
+  static async search ({ limit, skip, sort, categoryId, minPrice, maxPrice, stock, search }) {
+    const categoryIdStr = categoryId ? `&categoryId=${categoryId}` : ''
+    const searchStr = search ? `&search=${search}` : ''
+    const queryStr = `?limit=${limit || 20}&skip=${skip || 0}&sort=${sort || '-createdAt'}&stock=${stock}&minPrice=${minPrice}&maxPrice=${maxPrice}${categoryIdStr}${searchStr}`
+    const resp = (await request.get(`/api/products${queryStr}`)).data
+    let results = []
+    if (!resp.error_code) results = resp.data
+    return results
+  }
   static async getByIds ({ productIds }) {
     const resp = (await request.post('/api/products/getByIds', { productIds })).data
     let results = []
