@@ -15,6 +15,7 @@
 					<el-button
 						type="primary" 
 						plain
+						disabled
 						@click="uploadDialogVisible = true">
 						<i class="el-icon-upload el-icon--right"></i>
 						产品数据导入
