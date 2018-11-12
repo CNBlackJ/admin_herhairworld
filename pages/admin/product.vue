@@ -169,8 +169,10 @@
           .catch(_ => {});
 			},
 			async currentChange (currentPage) {
+				this.isLoading = true
 				const pageSize = 10
 				await this.$store.dispatch('product/listProducts', { skip: (currentPage-1) * pageSize, limit: pageSize })
+				this.isLoading = false
 			}
 		}
 	}

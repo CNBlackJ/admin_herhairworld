@@ -116,8 +116,10 @@
 				return moment(row.createdAt).format('YYYY-MM-DD HH:mm')
 			},
 			async currentChange (currentPage) {
+				this.isLoading = true
 				const pageSize = 10
 				await this.listInquiries({ skip: (currentPage-1) * pageSize, limit: pageSize })
+				this.isLoading = false
 			}
 		}
 	}
