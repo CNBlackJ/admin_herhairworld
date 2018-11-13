@@ -1,7 +1,7 @@
 <template>
   <div
     class="error-container">
-    <img src="~/assets/404-snow.gif">
+    <img src="~/assets/404.gif">
     <div class="error-tips">
       You're lost in deep space. <a @click="goHome">Click to go back.</a>
     </div>
