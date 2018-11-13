@@ -1,7 +1,7 @@
 <template>
 	<div class="admin-order-con">
 		<el-table
-      :data="orderList"
+      :data="orders"
 			style="width: 100%">
 			<el-table-column
 				type="index"
@@ -54,22 +54,17 @@
 </template>
 
 <script>
-	import order from '@/apis/order'
+	import { mapState } from 'vuex'
 
 	export default {
 		layout: 'admin',
-		data () {
-			return {
-				orderList: []
-			}
+		computed: {
+			...mapState({
+				orders: state => state.order.orders
+			})
 		},
 		created () {
-			this.listOrder()
-		},
-		methods: {
-			async listOrder () {
-				this.orderList = await order.list({})
-			}
+			// this.$store.dispatch('order/setOrders')
 		}
 	}
 </script>

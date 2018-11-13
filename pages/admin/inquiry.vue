@@ -6,7 +6,7 @@
 				<el-col :xl="2" :lg="3">
 					<el-button
 						type="success"
-						disabled
+						@click="exportData"
 						plain>
 						<i class="el-icon-circle-plus el-icon--right"></i>
 						导出数据
@@ -43,7 +43,7 @@
         label="手机">
 			</el-table-column>
 			<el-table-column
-				prop="businessType"
+				:formatter="formatBusinessTypes"
 				label="业务类型">
 			</el-table-column>
       <el-table-column
@@ -84,6 +84,7 @@
 <script>
 	import inquiry from '@/apis/inquiry'
 	import moment from 'moment'
+	import XLSX from 'xlsx'
 
 	export default {
 		layout: 'admin',
@@ -115,11 +116,32 @@
 			formatDate (row, col) {
 				return moment(row.createdAt).format('YYYY-MM-DD HH:mm')
 			},
+			formatBusinessTypes (row) {
+				const businessTypes = row.businessTypes || []
+				let result = ''
+				businessTypes.forEach((ele, index) => {
+					result = result + (index === 0 ? '' : '、') + ele
+				})
+				return result
+			},
 			async currentChange (currentPage) {
 				this.isLoading = true
 				const pageSize = 10
 				await this.listInquiries({ skip: (currentPage-1) * pageSize, limit: pageSize })
 				this.isLoading = false
+			},
+			async exportData () {
+				const { rows } = (await inquiry.list({ limit: this.count, skip: 0 }))
+				const data = rows.map(row => {
+					row.businessTypes = this.formatBusinessTypes(row)
+					delete row.__v
+					return row
+				})
+				const inquiryData = XLSX.utils.json_to_sheet(data) 
+				const wb = XLSX.utils.book_new()
+				XLSX.utils.book_append_sheet(wb, inquiryData, 'inquiry list')
+				const filename = `inquiry_list(${moment().format('YYYY-MM-DD')}).xlsx`
+				XLSX.writeFile(wb, filename)
 			}
 		}
 	}
