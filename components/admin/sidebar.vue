@@ -25,16 +25,16 @@
 		data () {
 			return {
 				adminSidebars: [
-					{ index: 0, text: '控制面板', url: '/admin', icon: 'el-icon-setting' },
-					{ index: 1, text: '页面编辑', url: '/admin/page', icon: 'el-icon-edit' },
-					{ index: 3, text: '产品列表', url: '/admin/product', icon: 'el-icon-goods' },
-					{ index: 4, text: '询盘用户', url: '/admin/inquiry', icon: 'el-icon-service' },
-					{ index: 8, text: '分类管理', url: '/admin/category', icon: 'el-icon-document' },
-					{ index: 9, text: '优惠券管理', url: '/admin/coupon', icon: 'el-icon-news' },
-					{ index: 2, text: '订单管理', url: '/admin/order', icon: 'el-icon-tickets' },
-					{ index: 5, text: '用户信息', url: '/admin/user', icon: 'el-icon-circle-plus-outline' },
-					{ index: 6, text: '支付信息', url: '/admin/payment', icon: 'el-icon-success' },
-					{ index: 7, text: '数据导入', url: '/admin/data', icon: 'el-icon-refresh' }
+					{ index: 0, text: '控制面板', url: '/', icon: 'el-icon-setting' },
+					{ index: 1, text: '页面编辑', url: '/page', icon: 'el-icon-edit' },
+					{ index: 3, text: '产品列表', url: '/product', icon: 'el-icon-goods' },
+					{ index: 4, text: '询盘用户', url: '/inquiry', icon: 'el-icon-service' },
+					{ index: 8, text: '分类管理', url: '/category', icon: 'el-icon-document' },
+					{ index: 9, text: '优惠券管理', url: '/coupon', icon: 'el-icon-news' },
+					{ index: 2, text: '订单管理', url: '/order', icon: 'el-icon-tickets' },
+					{ index: 5, text: '用户信息', url: '/user', icon: 'el-icon-circle-plus-outline' },
+					{ index: 6, text: '支付信息', url: '/payment', icon: 'el-icon-success' },
+					{ index: 7, text: '数据导入', url: '/data', icon: 'el-icon-refresh' }
 				],
 				selectedSidebar: 0
 			}

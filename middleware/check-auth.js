@@ -9,5 +9,5 @@ export default function ({ store, req, redirect }) {
     // login with token
     store.dispatch('loginWithToken', adminToken)
   }
-  if (!adminToken && !store.getters.isAuthenticated) redirect('/admin/login')
+  if (!adminToken && !store.getters.isAuthenticated) redirect('/login')
 }

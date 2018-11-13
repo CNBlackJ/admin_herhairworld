@@ -30,6 +30,7 @@
 		</el-card>
 
 		<el-table
+			class="order-table"
 			v-on:cell-click="showOrderDetail"
       :data="orderDetails"
 			style="width: 100%">
@@ -113,6 +114,10 @@
 		flex-direction: row;
 		align-items: center;
 		justify-content: space-around;
+	}
+
+	.order-table {
+		padding-top: 20px
 	}
 
 	.os-item {

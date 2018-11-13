@@ -17,7 +17,7 @@
 		methods: {
 			goLogin () {
 				if (this.$store.getters['admin/isAuthenticated']) return
-				this.$router.push({ path: '/admin/login' })
+				this.$router.push({ path: '/login' })
 			}
 		}
 	}
