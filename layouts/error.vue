@@ -1,7 +1,7 @@
 <template>
   <div
     class="error-container">
-    <img src="~/assets/404.gif">
+    <img src="https://herhairword-1255936829.cos.ap-guangzhou.myqcloud.com/404-snow.gif">
     <div class="error-tips">
       You're lost in deep space. <a @click="goHome">Click to go back.</a>
     </div>
