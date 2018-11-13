@@ -1,13 +1,22 @@
 <template>
-  <div class="error-container">
-    <img src="~/assets/404.gif">
+  <div
+    class="error-container">
+    <img src="~/assets/404-snow.gif">
+    <div class="error-tips">
+      You're lost in deep space. <a @click="goHome">Click to go back.</a>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
   props: ['error'],
-  layout: 'blog' // 你可以为错误页面指定自定义的布局
+  methods: {
+    goHome () {
+      console.log('aa')
+      this.$router.push({ path: '/' })
+    }
+  }
 }
 </script>
 
@@ -23,5 +32,14 @@ export default {
 		-ms-transform: translate(-50%, -50%);
 		-o-transform: translate(-50%, -50%);
 		transform: translate(-50%, -50%);
+  }
+
+  .error-tips {
+    color: #E6A23C;
+    font-size: 18px;
+  }
+
+  .error-tips a {
+    border-bottom: 1px solid #E6A23C;
   }
 </style>
