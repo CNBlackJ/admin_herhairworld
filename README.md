@@ -26,7 +26,7 @@ Using [Nuxt.js](https://nuxtjs.org/) and [ElementUI](https://github.com/ElemeFE/
 
 `$ open http://localhost:5001`
 
-## update logs
+## Change Logs
 
 - 11.13
   - 更新订单列表页数据显示
