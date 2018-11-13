@@ -34,7 +34,8 @@
         prop="email"
         label="邮箱">
 			</el-table-column>
-      <el-table-column
+			<el-table-column
+				show-overflow-tooltip
         prop="country"
         label="国家">
 			</el-table-column>
@@ -46,7 +47,8 @@
 				:formatter="formatBusinessTypes"
 				label="业务类型">
 			</el-table-column>
-      <el-table-column
+			<el-table-column
+				show-overflow-tooltip
         prop="comment"
         label="留言内容">
 			</el-table-column>

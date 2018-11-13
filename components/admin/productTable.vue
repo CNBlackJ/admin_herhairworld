@@ -14,6 +14,7 @@
 				</template>
 			</el-table-column>
 			<el-table-column
+				show-overflow-tooltip
 			  sortable
         prop="name"
         label="名称">
