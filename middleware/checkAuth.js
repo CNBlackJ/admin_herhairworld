@@ -4,7 +4,7 @@ import user from '@/apis/user'
 import { getTokenFromCookie } from '@/utils/authV1'
 
 const needAuth = [
-  '/admin'
+  '/'
 ]
 
 export default async function ({ route, req, res, redirect, store }) {

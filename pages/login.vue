@@ -50,7 +50,7 @@
 				const { username, password } = this.adminLoginForm
 				await this.$store.dispatch('login', this.adminLoginForm)
 				if (this.isAuthenticated) {
-					this.$router.push('/admin')
+					this.$router.push('/')
 				} else {
 					alert('用户名或密码错误')
 				}
