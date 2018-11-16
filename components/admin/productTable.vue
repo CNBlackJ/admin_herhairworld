@@ -20,18 +20,22 @@
         label="名称">
 			</el-table-column>
 			<el-table-column
-			sortable
+				sortable
         prop="color"
         label="颜色">
 			</el-table-column>
 			<el-table-column
-			  sortable
         :formatter="formatPrice"
         label="价格 ($)">
 			</el-table-column>
 			<el-table-column
 			  :formatter="formatLen"
         label="长度 (cm)">
+			</el-table-column>
+			<el-table-column
+				sortable
+			  prop="index"
+        label="排序">
 			</el-table-column>
       <el-table-column
         :formatter="formatCategory"
@@ -75,13 +79,11 @@
 		},
 		data() {
 			return {
-				categories: [],
 				isLoading: true
 			}
 		},
 		async created () {
 			await this.$store.dispatch('product/listProducts', {})
-			this.categories = await category.list({})
 			this.isLoading = false
 		},
 		methods: {

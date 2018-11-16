@@ -4,8 +4,12 @@
 		element-loading-text="拼命加载中"
 		element-loading-spinner="el-icon-loading"
 		element-loading-background="hsla(0,0%,100%,.9)">
-		<el-form :model="prod" :rules="rules" ref="prod" label-width="100px">
-			<el-row>
+		<el-form
+			:model="prod"
+			:rules="rules"
+			ref="prod"
+			label-width="100px">
+			<el-row :gutter="20">
 				<el-col :span="10">
 					<el-form-item label="产品名称" prop="name">
 						<el-input v-model="prod.name"></el-input>
@@ -23,7 +27,7 @@
 				</el-col>
 			</el-row>
 
-			<el-row>
+			<el-row :gutter="20">
 				<el-col :span="6">
 					<el-form-item label="颜色" prop="color">
 						<el-input v-model="prod.color"></el-input>
@@ -34,12 +38,7 @@
 						<el-input v-model="prod.material"></el-input>
 					</el-form-item>
 				</el-col>
-				<el-col :span="6">
-					<el-form-item label="库存数(件)" prop="quantity">
-						<el-input-number v-model.number="prod.quantity"></el-input-number>
-					</el-form-item>
-				</el-col>
-				<el-col :span="6">
+				<el-col :span="8">
 					<el-form-item label="重量(g)" required>
 						<el-col :span="11">
 							<el-form-item prop="minWeight">
@@ -57,15 +56,44 @@
 			</el-row>
 
 			<el-row>
-				<el-col :span="24">
+				<el-col :span="8">
 					<el-form-item label="类别" prop="category">
-						<el-radio
-							v-for="category in categories"
-							:key="category._id"
-							v-model="prod.category"
-							:label="category._id">
-							{{category.name}}
-						</el-radio>
+						<el-dropdown>
+							<el-button>
+								{{selectedCategoryName}}<i class="el-icon-arrow-down el-icon--right"></i>
+							</el-button>
+							<el-dropdown-menu slot="dropdown">
+								<el-dropdown-item
+									v-for="category in categories"
+									:key="category._id"
+									@click.native="selectedCategory(category)">
+									{{category.name}}
+								</el-dropdown-item>
+							</el-dropdown-menu>
+						</el-dropdown>
+					</el-form-item>
+				</el-col>
+
+				<el-col :span="12">
+					<el-form-item :label="'排序(总' + sortIndex + ')'" prop="index">
+						<el-dropdown disabled>
+							<el-button>
+								{{prod.index}}<i class="el-icon-arrow-down el-icon--right"></i>
+							</el-button>
+							<el-dropdown-menu slot="dropdown">
+								<el-dropdown-item
+									@click.native="prod.index = 0">
+									0
+								</el-dropdown-item>
+								<el-dropdown-item
+									v-for="i in sortIndex"
+									:key="i"
+									:disabled="existSort.indexOf(i) > -1"
+									@click.native="prod.index = i">
+									{{i}}
+								</el-dropdown-item>
+							</el-dropdown-menu>
+						</el-dropdown>
 					</el-form-item>
 				</el-col>
 			</el-row>
@@ -142,7 +170,7 @@
 								style="margin-left: 10px"
 								v-else
 								size="small"
-								@click="showInput">
+								@click="priceLenVisible = true">
 								+ 添加尺寸
 							</el-button>
 						</el-card>
@@ -197,7 +225,8 @@
 				isEdit: state => state.product.isEdit,
 				editProductId: state => state.product.editProductId,
 				imgs: state => state.uploadImgs.imgs,
-				detailImgs: state => state.uploadImgs.detailImgs
+				detailImgs: state => state.uploadImgs.detailImgs,
+				categories: state => state.category.categories.filter(ele => ele.isShow)
 			})
 		},
 		components: {
@@ -206,10 +235,12 @@
 		data() {
 			return {
 				isLoading: true,
-				categories: [],
         priceLenVisible: false,
 				price: 0,
 				length: 0,
+				selectedCategoryName: '请选择类别',
+				sortIndex: 0,
+				existSort: [],
 				prod: {},
 				rules: {
 					name: [
@@ -218,7 +249,7 @@
 					model: [
 						{ required: true, message: '请输入产品model', trigger: 'blur' }
 					],
-					quantity: [
+					index: [
 						{ type: 'number', required: true, message: '请输入产品数量', trigger: 'blur' },
 						{ type: 'number', message: '库存必须为数字', trigger: 'blur' },
 					],
@@ -254,19 +285,21 @@
 		},
 		async created () {
 			await this.getProduct()
-			const categories = await category.list({})
-			this.categories = categories.filter(ele => ele.isShow)
 			this.isLoading = false
 		},
 		methods: {
 			async getProduct () {
 				if (this.isEdit) {
 					this.prod = await product.getById(this.editProductId)
+					const categoryId = this.prod.category
+					this.selectedCategoryName = this.categories.find(ele => String(ele._id) === String(categoryId)).name
+					await this.getProductIndex(categoryId)
 				} else {
 					this.prod = {
 						model: `test model name ${new Date()}`,
 						name: `test product name ${new Date()}`,
 						quantity: 999,
+						index: 0,
 						orderMin: 1,
 						material: '100% Human Hair',
 						package: '1pcs/lot(100g)',
@@ -290,9 +323,6 @@
 				const lengths = [...this.prod.lengths]
 				_.remove(lengths, ele => ele.len === len)
 				this.prod.lengths = lengths
-      },
-      showInput() {
-        this.priceLenVisible = true
       },
       lenPriceConfirm() {
 				const len = this.length
@@ -412,7 +442,22 @@
           this.$message.error('上传头像图片大小不能超过 2MB!');
         }
         return isJPG && isLt2M;
-      }
+			},
+			async selectedCategory (category) {
+				this.prod.category = category._id
+				this.selectedCategoryName = category.name
+				await this.getProductIndex(category._id)
+			},
+			async getProductIndex (categoryId) {
+				this.existSort = []
+				const { rows, count } = await product.list({ categoryId, limit: 10000 })
+				rows.map(ele => {
+					if (ele.index) {
+						this.existSort.push(ele.index)
+					}
+				})
+				this.sortIndex = count + Number(!this.isEdit)
+			}
 		}
 	}
 </script>
