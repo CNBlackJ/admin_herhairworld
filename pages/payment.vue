@@ -12,6 +12,10 @@
 			</div>
 			<div>
 				<el-table
+					v-loading="isLoading"
+					element-loading-text="拼命加载中"
+					element-loading-spinner="el-icon-loading"
+					element-loading-background="hsla(0,0%,100%,.9)"
 					highlight-current-row				
 					:data="payments"
 					style="width: 100%">
@@ -68,6 +72,10 @@
 		</el-card>
 
 		<el-dialog
+			v-loading="isLoadingEdit"
+			element-loading-text="拼命加载中"
+			element-loading-spinner="el-icon-loading"
+			element-loading-background="hsla(0,0%,100%,.9)"
 			title="添加paypal账户"
 			:visible.sync="dialogVisible"
 			width="50%">
@@ -115,6 +123,8 @@
 		layout: 'admin',
 		data () {
 			return {
+				isLoading: false,
+				isLoadingEdit: false,
 				isEdit: false,
 				dialogVisible: false,
 				paymentForm: {
@@ -138,15 +148,19 @@
 		},
 		methods: {
 			async listPayments () {
+				this.isLoading = true
 				const { count, rows } = await payment.list({})
 				this.payments = rows
+				this.isLoading = false
 			},
 			async createPayment () {
 				const formName = 'paymentForm'
 				this.$refs[formName].validate(async(valid) => {
           if (valid) {
+						this.isLoadingEdit = true
 						await payment.create(this.paymentForm)
 						await this.listPayments()
+						this.isLoadingEdit = false
 						this.dialogVisible = false
 						this.$message({
 							message: '添加成功',
@@ -158,8 +172,10 @@
         })
 			},
 			async updatePayment () {
+				this.isLoadingEdit = true
 				await payment.update(this.paymentForm)
 				await this.listPayments()
+				this.isLoadingEdit = fasle
 				this.dialogVisible = false
 				this.$message({
 					message: '更新成功',
@@ -178,8 +194,10 @@
 				}
 			},
 			async deletePayment (index, rows) {
+				this.isLoadingEdit = true
 				const row = rows[index]
 				await payment.delete(row._id)
+				this.isLoadingEdit = false
 				this.$message({
 					message: '删除成功',
 					type: 'success'
@@ -187,6 +205,7 @@
 				await this.listPayments()
 			},
 			async changeUsing (index, rows) {
+				this.isLoadingEdit = true
 				const row = rows[index]
 				const payload = {
 					_id: row._id,
@@ -194,6 +213,7 @@
 				}
 				await payment.update(payload)
 				await this.listPayments()
+				this.isLoadingEdit = flase
 			}
 		}
 	}

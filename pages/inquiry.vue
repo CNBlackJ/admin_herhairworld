@@ -1,5 +1,10 @@
 <template>
-	<div class="inquiry-container">
+	<div
+		class="inquiry-container"
+		v-loading="isExportDataLoading"
+		element-loading-text="拼命加载中"
+		element-loading-spinner="el-icon-loading"
+		element-loading-background="hsla(0,0%,100%,.9)">
 
 		<div class="inquiry-sub-menu">
 			<el-row style="margin-bottom: 10px;">
@@ -93,6 +98,7 @@
 		data () {
 			return {
 				isLoading: true,
+				isExportDataLoading: false,
 				inquiryList: [],
 				count: 0
 			}

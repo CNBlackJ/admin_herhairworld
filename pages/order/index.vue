@@ -30,6 +30,10 @@
 		</el-card>
 
 		<el-table
+			v-loading="isLoading"
+			element-loading-text="拼命加载中"
+			element-loading-spinner="el-icon-loading"
+			element-loading-background="hsla(0,0%,100%,.9)"
 			class="order-table"
 			v-on:cell-click="showOrderDetail"
       :data="orderDetails"
@@ -84,8 +88,15 @@
 				orderDetails: 'order/orderDetails'
 			})
 		},
+		data () {
+			return {
+				isLoading: false
+			}
+		},
 		async created () {
+			this.isLoading = true
 			await this.$store.dispatch('order/setOrders', {})
+			this.isLoading = false
 		},
 		methods: {
 			formatDate (row) {
@@ -98,8 +109,10 @@
 				return names
 			},
 			async currentChange (currentPage) {
+				this.isLoading = true
 				const pageSize = 10
 				await this.$store.dispatch('order/setOrders', { skip: (currentPage-1) * pageSize, limit: pageSize })
+				this.isLoading = false
 			},
 			showOrderDetail (row) {
 				console.log(row)
