@@ -30,11 +30,6 @@
         label="价格 ($)">
 			</el-table-column>
 			<el-table-column
-			  sortable
-        prop="quantity"
-        label="库存数 (件)">
-			</el-table-column>
-			<el-table-column
 			  :formatter="formatLen"
         label="长度 (cm)">
 			</el-table-column>
