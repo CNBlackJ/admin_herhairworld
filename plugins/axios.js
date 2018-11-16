@@ -1,7 +1,14 @@
 import * as axios from 'axios'
 
+const baseURL = {
+  production: 'http://api.herhairworld.com',
+  staging: 'http://apiherhairworld.wifihi.cn',
+  development: 'http://127.0.0.1:3010'
+}
+
 export default ({ app, store, redirect }) => {
-  axios.defaults.baseURL = process.env.NODE_ENV === 'production' ? 'http://47.90.207.98:3010' : 'http://127.0.0.1:3010'
+  const BASE_URL = require('~/config.json').BASE_URL
+  axios.defaults.baseURL = BASE_URL || baseURL[process.env.NODE_ENV] || baseURL['staging']
 
   axios.interceptors.request.use(req => {
     let authToken = ''
