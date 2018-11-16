@@ -114,16 +114,21 @@
 						this.$store.dispatch('uploadImgs/pushIntoImgs', response.data[0])
 					}
 				} else {
-					const files = []
-					fileList.forEach(ele => {
-						if (ele.response && ele.response.data[0]) {
-							files.push(ele.response.data[0]) 
-						}
-					})
+					// const files = []
+					// fileList.forEach(ele => {
+					// 	if (ele.response && ele.response.data[0]) {
+					// 		files.push(ele.response.data[0]) 
+					// 	}
+					// })
+					// if (type === 'details') {
+					// 	this.$store.commit('uploadImgs/STE_DETAIL_IMGS', files)
+					// } else if (type === 'products') {
+					// 	this.$store.commit('uploadImgs/SET_IMGS', files)
+					// }
 					if (type === 'details') {
-						this.$store.commit('uploadImgs/STE_DETAIL_IMGS', files)
+						this.$store.dispatch('uploadImgs/pushIntoDetailImgs', response.data[0])
 					} else if (type === 'products') {
-						this.$store.commit('uploadImgs/SET_IMGS', files)
+						this.$store.dispatch('uploadImgs/pushIntoImgs', response.data[0])
 					}
 				}
 				this.getImgsList()

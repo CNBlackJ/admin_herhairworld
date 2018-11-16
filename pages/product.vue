@@ -140,7 +140,7 @@
 					name: '',
 					categoryId: '',
 					minPrice: 0,
-					maxPrice: 20,
+					maxPrice: 2000,
 					stock: true
 				}
 			}
