@@ -182,16 +182,16 @@
 					type: 'success'
 				});
 			},
-			async editPayment (index, rows) {
+			editPayment (index, rows) {
 				this.isEdit = true
 				const row = rows[index]
-				this.dialogVisible = true
 				this.paymentForm = {
 					_id: row._id,
 					account: row.account,
 					sandboxToken: row.sandboxToken,
 					productionToken: row.productionToken
 				}
+				this.dialogVisible = true
 			},
 			async deletePayment (index, rows) {
 				this.isLoadingEdit = true

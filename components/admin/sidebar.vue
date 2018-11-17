@@ -34,7 +34,8 @@
 					{ index: 2, text: '订单管理', url: '/order', icon: 'el-icon-tickets' },
 					{ index: 5, text: '用户信息', url: '/user', icon: 'el-icon-circle-plus-outline' },
 					{ index: 6, text: '支付信息', url: '/payment', icon: 'el-icon-success' },
-					{ index: 7, text: '数据导入', url: '/data', icon: 'el-icon-refresh' }
+					{ index: 7, text: '数据导入', url: '/data', icon: 'el-icon-refresh' },
+					{ index: 10, text: '定价管理', url: '/price', icon: 'el-icon-goods' }
 				],
 				selectedSidebar: 0
 			}
