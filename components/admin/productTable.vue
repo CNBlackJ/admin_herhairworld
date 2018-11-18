@@ -29,10 +29,6 @@
         label="价格 ($)">
 			</el-table-column>
 			<el-table-column
-			  :formatter="formatLen"
-        label="长度 (cm)">
-			</el-table-column>
-			<el-table-column
 				sortable
 			  prop="index"
         label="排序">
@@ -97,25 +93,14 @@
           expandedRows.shift()
         }
 			},
-			formatWeight (row, column) {
-				return `${row.minWeight} - ${row.maxWeight}`
-			},
-			formatLen (row, column) {
-				let length = ''
-				if (row.lengths.length) {
-					const allLengths = [...row.lengths].map(ele => ele.len).sort()
-					length = `${allLengths[0]} - ${allLengths.pop()}`
-				}
-				return length
-			},
 			formatCategory (row, column) {
 				return row.category.name
 			},
 			formatPrice (row, column) {
-				const { lengths } = row
+				const { customizePrice } = row
 				let price = ''
-				if (lengths.length) {
-					const allPrice =  _.sortedUniq([...lengths].map(ele => ele.price))
+				if (customizePrice.length) {
+					const allPrice =  _.orderBy([...customizePrice].map(ele => ele.price))
 					price = `${allPrice[0].toFixed(2)} - ${allPrice.pop().toFixed(2)}`
 				}
 				return price

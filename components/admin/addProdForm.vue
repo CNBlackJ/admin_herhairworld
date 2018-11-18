@@ -115,30 +115,55 @@
 					</el-form-item>
 				</el-col>
 				<el-col :span="18">
-					<el-form-item label="长度 / 价格">
+					<el-form-item label="价格">
+						<el-select
+							size="mini"
+							v-model="prod.priceId"
+							placeholder="请选择价格类型">
+							<el-option
+								v-for="price in priceList"
+								v-on:click.native="selectPriceType(price._id)"
+								:key="price._id"
+								:label="price.key"
+								:value="price._id">
+							</el-option>
+						</el-select>
 						<el-card>
 							<el-tag
-								v-for="length in prod.lengths"
-								:key="length._id"
+								v-for="cusPrice in prod.customizePrice"
+								:key="cusPrice.key"
 								closable
 								:disable-transitions="false"
-								@close="removeLenPrice(length.len)">
-								{{length.len}} inch - $ {{length.price}}
+								@close="removeCusPrice(cusPrice.key)">
+								{{cusPrice.key}} - $ {{cusPrice.price}}
 							</el-tag>
 							<div v-if="priceLenVisible">
 								<el-row>
 									<el-col :span="3">
-										Length: 
+										{{selectPrice.key}}: 
 									</el-col>
-									<el-col :span="6">
+
+									<el-col
+										v-if="selectPrice.dataType === 'number'"
+										:span="6">
 										<el-input-number
 											:precision="2"
-											v-model="length"
+											v-model="priceKey"
 											controls-position="right"
 											:min="0"
 											size="small">
 										</el-input-number>
 									</el-col>
+
+									<el-col
+										:span="6"
+										v-if="selectPrice.dataType === 'string'">
+										<el-input
+											size="small"
+											v-model="priceKey">
+										</el-input>
+									</el-col>
+
 									<el-col :span="2" :offset="1">
 										Price:
 									</el-col>
@@ -153,14 +178,14 @@
 									</el-col>
 									<el-col :span="2" :offset="1">
 										<el-button
-											@click="lenPriceConfirm"
+											@click="cusPriceConfirm"
 											size="small"
 											type="primary">
 										确定</el-button>
 									</el-col>
 									<el-col :span="2" :offset="1">
 										<el-button
-											@click="lenPriceCancle"
+											@click="cusPriceCancle"
 											size="small">
 										取消</el-button>
 									</el-col>
@@ -170,8 +195,8 @@
 								style="margin-left: 10px"
 								v-else
 								size="small"
-								@click="priceLenVisible = true">
-								+ 添加尺寸
+								@click="cusPriceAdd">
+								+ 添加
 							</el-button>
 						</el-card>
 					</el-form-item>
@@ -205,6 +230,19 @@
 				<el-button type="danger" v-if="isEdit" @click="deleteProd">删除</el-button>
 			</el-form-item>
 		</el-form>
+
+		<el-dialog
+			append-to-body
+			title="提示"
+			:visible.sync="showClearCusPrice"
+			:before-close="cancelClearCusPrice"
+			width="30%">
+			<span>该操作将会清除已添加的价格信息！</span>
+			<span slot="footer" class="dialog-footer">
+				<el-button @click="cancelClearCusPrice">取 消</el-button>
+				<el-button type="primary" @click="clearCusPrices">确 定</el-button>
+			</span>
+		</el-dialog>
 	</div>
 </template>
 
@@ -226,7 +264,9 @@
 				editProductId: state => state.product.editProductId,
 				imgs: state => state.uploadImgs.imgs,
 				detailImgs: state => state.uploadImgs.detailImgs,
-				categories: state => state.category.categories.filter(ele => ele.isShow)
+				categories: state => state.category.categories.filter(ele => ele.isShow),
+				priceList: state => state.price.priceList,
+				dataTypes: state => state.price.dataTypes
 			})
 		},
 		components: {
@@ -235,13 +275,17 @@
 		data() {
 			return {
 				isLoading: true,
-        priceLenVisible: false,
+				priceLenVisible: false,
+				showClearCusPrice: false,
 				price: 0,
 				length: 0,
 				selectedCategoryName: '请选择类别',
 				sortIndex: 0,
 				existSort: [],
 				prod: {},
+				selectPrice: {},
+				olderPriceType: '',
+				priceKey: '',
 				rules: {
 					name: [
 						{ required: true, message: '请输入产品名称', trigger: 'blur' },
@@ -284,6 +328,7 @@
 			};
 		},
 		async created () {
+			await this.$store.dispatch('price/setPriceList')
 			await this.getProduct()
 			this.isLoading = false
 		},
@@ -305,8 +350,9 @@
 						package: '1pcs/lot(100g)',
 						originPrice: 199,
 						price: 99,
+						priceId: this.priceList.find(ele => ele.dataType === 'string')._id,
 						color: 'Natural Color',
-						mainImg: '',
+						mainImg: 'http://herhairworld.wifihi.cn/85ec1eca85704b0fb083255f3a108101.jpg',
 						category: '',
 						imgs: [],
 						detailImgs: {
@@ -315,35 +361,39 @@
 						minWeight: 90,
 						maxWeight: 110,
 						online: true,
-						lengths: []
+						lengths: [],
+						customizePrice: []
 					}
 				}
+				this.olderPriceType = this.prod.priceId
 			},
-      removeLenPrice(len) {
-				const lengths = [...this.prod.lengths]
-				_.remove(lengths, ele => ele.len === len)
-				this.prod.lengths = lengths
-      },
-      lenPriceConfirm() {
-				const len = this.length
+      removeCusPrice(key) {
+				const customizePrice = [...this.prod.customizePrice]
+				_.remove(customizePrice, ele => ele.key === key)
+				this.prod.customizePrice = customizePrice
+			},
+			async cusPriceAdd () {
+				this.selectPrice = this.priceList.find(ele => String(ele._id) === String(this.prod.priceId))
+				this.priceLenVisible = true
+			},
+      cusPriceConfirm() {
+				const key = this.priceKey
 				const price = this.price
-        if (len && price) {
-					const lenPrice = { len, price }
-          this.prod.lengths.push(lenPrice)
-				}
-				this.lenPriceCancle()
+				this.prod.customizePrice.push({ key, price })
+				this.cusPriceCancle()
 			},
-			lenPriceCancle () {
+			cusPriceCancle () {
         this.priceLenVisible = false;
-				this.length = 0
+				this.priceKey = ''
 				this.price = 0
 			},
 			createProd(formName) {
 				let isValid = true
-				if (!this.prod.lengths.length) {
+				console.log(this.prod)
+				if (!this.prod.customizePrice.length) {
 					isValid = false
 					this.$message({
-						message: '输入尺寸和价格',
+						message: '输入价格',
 						type: 'warning'
 					});
 				}
@@ -394,10 +444,10 @@
 			},
 			updateProd (formName) {
 				let isValid = true
-				if (!this.prod.lengths.length) {
+				if (!this.prod.customizePrice.length) {
 					isValid = false
 					this.$message({
-						message: '输入尺寸和价格',
+						message: '输入价格',
 						type: 'warning'
 					});
 				}
@@ -457,6 +507,22 @@
 					}
 				})
 				this.sortIndex = count + Number(!this.isEdit)
+			},
+			selectPriceType (priceId) {
+				if (this.prod.customizePrice.length) {
+					// 弹出警告 清除customizePrice
+					this.showClearCusPrice = true
+				} else {
+					this.selectPrice = this.priceList.find(ele => String(ele._id) === String(priceId))
+				}
+			},
+			clearCusPrices () {
+				this.showClearCusPrice = false
+				this.prod.customizePrice = []
+			},
+			cancelClearCusPrice () {
+				this.showClearCusPrice = false
+				this.prod.priceId = this.olderPriceType
 			}
 		}
 	}

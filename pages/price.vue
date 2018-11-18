@@ -112,7 +112,8 @@
 		layout: 'admin',
 		computed: {
 			...mapState({
-				priceList: state => state.price.priceList
+				priceList: state => state.price.priceList,
+				dataTypes: state => state.price.dataTypes
 			})
 		},
 		data () {
@@ -125,11 +126,6 @@
 					key: '',
 					dataType: ''
 				},
-				dataTypes: [
-					{ value: 'number', label: '数字' },
-					{ value: 'string', label: '文字' },
-					{ value: 'image', label: '图片' }
-				],
 				priceRules: {
           key: [
             { required: true, message: '请输入key', trigger: 'blur' }

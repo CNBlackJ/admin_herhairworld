@@ -1,7 +1,12 @@
 import price from '@/apis/price'
 
 export const state = () => ({
-  priceList: []
+  priceList: [],
+  dataTypes: [
+    { value: 'number', label: '数字' },
+    { value: 'string', label: '文字' },
+    { value: 'image', label: '图片' }
+  ]
 })
 
 export const mutations = {
