@@ -305,11 +305,40 @@
 				<el-card>
 					<div slot="header">
 						<span>
-							产品详情页设置
+							产品详情设置
 						</span>
 						<i class="el-icon-info" style="float: right; padding: 3px 0"></i>
 					</div>
 					<div>
+						<el-row>
+							<el-col
+								:span="6"
+								v-for="(featuredProduct, i) in featuredProducts"
+								:key="featuredProduct._id">
+								<el-popover
+									placement="top-start"
+									trigger="hover">
+									<div>
+										<el-row>
+											<el-col :span="16">
+												<el-input size="middle" v-model="featureProductIds[i]" placeholder="请输入内容"></el-input>
+											</el-col>
+											<el-col :span="6" :offset="2">
+												<el-button
+													size="middle"
+													type="primary"
+													@click="updateFeatureProd(i)">
+													确认
+												</el-button>
+											</el-col>
+										</el-row>
+									</div>
+									<div slot="reference" class="fd-img-con">
+										<img class="fd-img" :src="featuredProduct.mainImg">
+									</div>
+								</el-popover>
+							</el-col>
+						</el-row>
 					</div>
 				</el-card>
 			</el-col>
@@ -327,7 +356,7 @@
 	import draggable from 'vuedraggable'
 
 	import uploadDialog from '@/components/uploadDialog'
-	import pageConfigApi from '@/apis/pageConfig'
+	import product from '@/apis/product'
 
 	export default {
 		layout: 'admin',
@@ -366,17 +395,26 @@
 					c: '',
 					d: '',
 					e: ''
-				}
+				},
+				featuredProducts: [],
+				featureProductIds: []
 			}
 		},
 		async created () {
 			await this.$store.dispatch('page/setPageConfig')
 			await this.$store.dispatch('page/setCategories')
+			const { rows } = await product.list({ limit: 4 })
+			this.featuredProducts = rows
 			this.updateSelectedCategories()
 			this.bannerIndex = JSON.parse(JSON.stringify(this.pageConfig.index.banner))
 			this.isLoading = false
 		},
 		methods: {
+			async updateFeatureProd(index) {
+				const pageConfig = JSON.parse(JSON.stringify(this.pageConfig))
+				pageConfig.faeturedProducts = this.featureProductIds
+				this.$store.dispatch('page/updatePageConfig', pageConfig)
+			},
 			async changeBannerImg (imgId) {
 				this.$store.commit('uploadDialog/SET_IS_SHOW')
 				const changeOptions = {
@@ -578,5 +616,16 @@
 
 	.img-small {
 		margin-top: -2px;
+	}
+
+	.fd-img-con {
+		padding: 0 2px;
+	}
+
+	.fd-img {
+		width: auto;
+		height: auto;
+		max-width: 100%;
+		max-height: 100%;	
 	}
 </style>
