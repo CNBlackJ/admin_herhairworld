@@ -352,7 +352,7 @@
 						price: 99,
 						priceId: this.priceList.find(ele => ele.dataType === 'string')._id,
 						color: 'Natural Color',
-						mainImg: 'http://herhairworld.wifihi.cn/85ec1eca85704b0fb083255f3a108101.jpg',
+						mainImg: '',
 						category: '',
 						imgs: [],
 						detailImgs: {

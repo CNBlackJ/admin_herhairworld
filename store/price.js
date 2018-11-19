@@ -4,8 +4,8 @@ export const state = () => ({
   priceList: [],
   dataTypes: [
     { value: 'number', label: '数字' },
-    { value: 'string', label: '文字' },
-    { value: 'image', label: '图片' }
+    { value: 'string', label: '文字' }
+    // { value: 'image', label: '图片' }
   ]
 })
 
