@@ -405,10 +405,10 @@
 				}
 				this.$refs[formName].validate(async (valid) => {
 					if (valid && isValid) {
-						this.isLoading = true
 						// 更新图片字段
 						this.prod.imgs = this.imgs
 						this.prod.detailImgs.product = this.detailImgs
+						this.isLoading = true
 						await product.create(this.prod)
 						this.isLoading = false
 						this.$emit('closeAddProdForm')

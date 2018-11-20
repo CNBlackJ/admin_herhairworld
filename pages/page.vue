@@ -375,7 +375,7 @@
 		},
 		data () {
 			return {
-				isLoading: true,
+				isLoading: false,
 				pageConfigForm: {
 					index: {
 						banner: [],
@@ -403,11 +403,12 @@
 		async created () {
 			await this.$store.dispatch('page/setPageConfig')
 			await this.$store.dispatch('page/setCategories')
+			this.isLoading = true
 			const { rows } = await product.list({ limit: 4 })
+			this.isLoading = false
 			this.featuredProducts = rows
 			this.updateSelectedCategories()
 			this.bannerIndex = JSON.parse(JSON.stringify(this.pageConfig.index.banner))
-			this.isLoading = false
 		},
 		methods: {
 			async updateFeatureProd(index) {
