@@ -90,7 +90,7 @@
 				this.$store.commit('uploadImgs/SET_IMGS', row.imgs)
 				this.$store.commit('uploadImgs/STE_DETAIL_IMGS', row.detailImgs.product)
 				if (!this.categories.length) await this.$store.dispatch('category/setCategories', { sort: 'index' })
-				this.$store.dispatch('product/setEditProduct')
+				await this.$store.dispatch('product/setEditProduct')
 				if(expandedRows.length > 1){
           expandedRows.shift()
         }
