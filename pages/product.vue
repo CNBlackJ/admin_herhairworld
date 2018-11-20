@@ -177,7 +177,8 @@
 			...mapState({
 				count: state => state.product.count,
 				categories: state => state.category.categories,
-				products: state => state.product.products
+				products: state => state.product.products,
+				isSortMode: state => state.product.isSortMode,
 			})
 		},
 		data () {
@@ -185,7 +186,6 @@
 				isLoading: false,
 				uploadDialogVisible: false,
 				addProdDialogVisible: false,
-				isSortMode: false,
 				currentSort: [],
 				searchCondition: {
 					name: '',
@@ -209,7 +209,7 @@
 				if (!this.categories.length) await this.$store.dispatch('category/setCategories', { sort: 'index' })
 			},
 			async sortProducts () {
-				this.isSortMode = true
+				this.$store.commit('product/SET_IS_SORT_MODE', true)
 				await this.listSortProducts()
 				this.currentSort = []
 				this.$store.commit('product/SET_IS_SORT', true)
@@ -231,7 +231,7 @@
 				})
 			},
 			async confirmSorted () {
-				this.isSortMode = false
+				this.$store.commit('product/SET_IS_SORT_MODE', false)
 				const { categoryId } = this.searchCondition
 				const sortPayload = {
 					categoryId,
@@ -241,7 +241,7 @@
 				await this.$store.dispatch('product/listProducts', { sort: categoryId ? 'categoryIndex' : 'index' })
 			},
 			cancelSort () {
-				this.isSortMode = false
+				this.$store.commit('product/SET_IS_SORT_MODE', false)
 				this.sortedProducts = []
 			},
 			async listSortProducts () {

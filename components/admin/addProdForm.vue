@@ -224,10 +224,17 @@
 			</el-form-item>
 
 			<el-form-item>
+				<el-alert
+					v-if="isSortMode"
+					:closable="false"
+					show-icon
+					title="当前是排序模式，不可执行更新操作。"
+					type="warning">
+				</el-alert>
 				<el-button v-if="!isEdit" type="primary" @click="createProd('prod')">立即创建</el-button>
 				<el-button v-if="!isEdit" @click="resetForm('prod')">重置</el-button>
-				<el-button type="primary" v-if="isEdit" @click="updateProd('prod')">立即更新</el-button>
-				<el-button type="danger" v-if="isEdit" @click="deleteProd">删除</el-button>
+				<el-button :disabled="isSortMode" type="primary" v-if="isEdit" @click="updateProd('prod')">立即更新</el-button>
+				<el-button :disabled="isSortMode" type="danger" v-if="isEdit" @click="deleteProd">删除</el-button>
 			</el-form-item>
 		</el-form>
 
@@ -267,7 +274,8 @@
 				detailImgs: state => state.uploadImgs.detailImgs,
 				categories: state => state.category.categories.filter(ele => ele.isShow),
 				priceList: state => state.price.priceList,
-				dataTypes: state => state.price.dataTypes
+				dataTypes: state => state.price.dataTypes,
+				isSortMode: state => state.product.isSortMode
 			})
 		},
 		components: {
@@ -331,8 +339,8 @@
 		async created () {
 			this.isLoading = true
 			await this.$store.dispatch('price/setPriceList')
-			this.isLoading = false
 			await this.getProduct()
+			this.isLoading = false
 		},
 		methods: {
 			async getProduct () {
