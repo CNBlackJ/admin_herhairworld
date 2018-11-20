@@ -31,15 +31,16 @@ export const mutations = {
 }
 
 export const actions = {
-  async listProducts ({ commit }, { limit = 10, skip = 0, categoryId }) {
-    const { rows, count } = await product.list({ limit, skip, categoryId })
+  async listProducts ({ commit }, { limit = 10, skip = 0, sort, categoryId }) {
+    const { rows, count } = await product.list({ limit, skip, sort, categoryId })
     commit('SET_PRODUCTS', rows)
     commit('SET_COUNT', count)
   },
-  async searchProducts ({ commit }, { limit = 10, skip = 0, categoryId, minPrice, maxPrice, stock, name }) {
+  async searchProducts ({ commit }, { limit = 10, skip = 0, sort = 'index', categoryId, minPrice, maxPrice, stock, name }) {
     const { rows, count } = await product.search({
       limit,
       skip,
+      sort,
       categoryId,
       minPrice,
       maxPrice,
@@ -52,6 +53,9 @@ export const actions = {
   setEditProduct ({ state, commit }) {
     const editProduct = state.products.find(ele => String(ele._id) === String(state.editProductId))
     commit('SET_EDIT_PRODUCT', editProduct)
+  },
+  async setNewSort ({ state, commit }, sortPayload) {
+    await product.updateSort(sortPayload)
   }
 }
 

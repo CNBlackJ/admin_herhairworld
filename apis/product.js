@@ -8,7 +8,7 @@ export default class product {
 
   static async list ({ limit, skip, sort, categoryId }) {
     const categoryIdStr = categoryId ? `&categoryId=${categoryId}` : ''
-    const queryStr = `?limit=${limit || 20}&skip=${skip || 0}&sort=${sort || '-createdAt'}${categoryIdStr}`
+    const queryStr = `?limit=${limit || 20}&skip=${skip || 0}&sort=${sort || 'index'}${categoryIdStr}`
     const resp = (await request.get(`/api/products${queryStr}`)).data
     let results = []
     if (!resp.error_code) results = resp.data
@@ -18,7 +18,7 @@ export default class product {
   static async search ({ limit, skip, sort, categoryId, minPrice, maxPrice, stock, search }) {
     const categoryIdStr = categoryId ? `&categoryId=${categoryId}` : ''
     const searchStr = search ? `&search=${search}` : ''
-    const queryStr = `?limit=${limit || 20}&skip=${skip || 0}&sort=${sort || '-createdAt'}&stock=${stock}&minPrice=${minPrice}&maxPrice=${maxPrice}${categoryIdStr}${searchStr}`
+    const queryStr = `?limit=${limit || 20}&skip=${skip || 0}&sort=${sort || 'index'}&stock=${stock}&minPrice=${minPrice}&maxPrice=${maxPrice}${categoryIdStr}${searchStr}`
     const resp = (await request.get(`/api/products${queryStr}`)).data
     let results = []
     if (!resp.error_code) results = resp.data
@@ -50,6 +50,13 @@ export default class product {
     delete prod.maxLen
     const resp = await request.put(`/api/products/${id}`, prod)
     return resp.data
+  }
+
+  static async updateSort (payload) {
+    const resp = (await request.post('/api/products/sort', payload)).data
+    let result = ''
+    if (!resp.error_code) result = resp.data
+    return result
   }
 
   static async deleteById ({ id }) {

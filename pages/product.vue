@@ -24,11 +24,30 @@
 				</el-col>
 				<el-col :xl="2" :lg="3">
 					<el-button
-						:type="isSortMode ? 'danger' : 'primary'" 
+						v-if="isSortMode"
+						type="danger" 
+						plain
+						@click="cancelSort">
+						<i class="el-icon--right el-icon-close"></i>
+						取消排序
+					</el-button>
+					<el-button
+						v-else
+						type="primary"
 						plain
 						@click="sortProducts">
-						<i class="el-icon--right" :class="{ 'el-icon-sort': !isSortMode, 'el-icon-close': isSortMode }"></i>
-						{{isSortMode ? '结束排序' : '产品排序'}}
+						<i class="el-icon--right el-icon-sort"></i>
+						产品排序
+					</el-button>
+				</el-col>
+				<el-col :xl="2" :lg="3">
+					<el-button
+						v-if="isSortMode"
+						type="success"
+						plain
+						@click="confirmSorted">
+						<i class="el-icon--right el-icon-check"></i>
+						确认排序
 					</el-button>
 				</el-col>
 			</el-row>
@@ -45,9 +64,14 @@
 						</el-form-item>
 						<el-form-item label="产品类型">
 							<el-select
+								v-on:change="selectCategoryChange"
 								v-on:click.native="listCategory"
 								v-model="searchCondition.categoryId"
 								placeholder="产品类型">
+								<el-option
+									label="All"
+									value="">
+								</el-option>
 								<el-option
 									v-for="category in categories"
 									v-if="category.name !== 'All'"
@@ -85,7 +109,7 @@
 							</el-switch>
 						</el-form-item>
 						<el-form-item>
-							<el-button v-if="isSortMode" size="small" type="success" @click="listSortProducts">查询</el-button>
+							<el-button v-if="isSortMode" size="small" type="success" @click="sortProducts">查询</el-button>
 							<el-button v-else size="small" type="primary" @click="searchProd">查询</el-button>
 						</el-form-item>
 					</el-form>
@@ -162,36 +186,69 @@
 				uploadDialogVisible: false,
 				addProdDialogVisible: false,
 				isSortMode: false,
-				sortedCategory: '',
+				currentSort: [],
 				searchCondition: {
 					name: '',
 					categoryId: '',
 					minPrice: 0,
 					maxPrice: 2000,
 					stock: true
-				}
+				},
+				sortedProducts: []
 			}
 		},
 		methods: {
+			async selectCategoryChange () {
+				if (this.isSortMode) {
+					this.sortProducts()
+				} else {
+					this.searchProd()
+				}
+			},
 			async listCategory () {
 				if (!this.categories.length) await this.$store.dispatch('category/setCategories', { sort: 'index' })
 			},
-			sortProducts () {
-				this.isSortMode = !this.isSortMode
+			async sortProducts () {
+				this.isSortMode = true
+				await this.listSortProducts()
+				this.currentSort = []
 				this.$store.commit('product/SET_IS_SORT', true)
 				const table = document.querySelector('.el-table__body-wrapper tbody')
-				const products = JSON.parse(JSON.stringify(this.products))
+				this.sortedProducts = JSON.parse(JSON.stringify(this.products))
+				const self = this
 				Sortable.create(table, {
-					disabled: !this.isSortMode,
+					disabled: !self.isSortMode,
 					onEnd({ newIndex, oldIndex }) {
-						const targetRow = products.splice(oldIndex, 1)[0]
-						products.splice(newIndex, 0, targetRow)
-						console.log(newIndex, oldIndex)
+						const targetRow = self.sortedProducts.splice(oldIndex, 1)[0]
+						self.sortedProducts.splice(newIndex, 0, targetRow)
+						self.currentSort = self.sortedProducts.map((product, i) => {
+							return {
+								_id: product._id,
+								index: i,
+							}
+						})
 					}
 				})
 			},
+			async confirmSorted () {
+				this.isSortMode = false
+				const { categoryId } = this.searchCondition
+				const sortPayload = {
+					categoryId,
+					sorts: this.currentSort
+				}
+				await this.$store.dispatch('product/setNewSort', sortPayload)
+				await this.$store.dispatch('product/listProducts', { sort: categoryId ? 'categoryIndex' : 'index' })
+			},
+			cancelSort () {
+				this.isSortMode = false
+				this.sortedProducts = []
+			},
 			async listSortProducts () {
-				await this.$store.dispatch('product/listProducts', { limit: 10000, categoryId: this.searchCondition.categoryId })
+				const { categoryId } = this.searchCondition
+				const condition = { limit: 10000, categoryId }
+				condition.sort = categoryId ? 'categoryIndex' : 'index'
+				await this.$store.dispatch('product/listProducts', condition)
 			},
 			addProduct () {
 				this.$store.commit('product/SET_IS_EDIT', false)
@@ -203,6 +260,8 @@
 			},
 			async searchProd () {
 				this.isLoading = true
+				const { categoryId } = this.searchCondition
+				this.searchCondition.sort = categoryId ? 'categoryIndex' : 'index'
 				await this.$store.dispatch('product/searchProducts', this.searchCondition)
 				this.isLoading = false
 			},

@@ -14,6 +14,10 @@
 				</template>
 			</el-table-column>
 			<el-table-column
+				type="index"
+				width="50">
+			</el-table-column>
+			<el-table-column
 				show-overflow-tooltip
 				sortable
 				prop="name"
@@ -32,6 +36,11 @@
 				sortable
 				prop="index"
 				label="排序">
+			</el-table-column>
+			<el-table-column
+				sortable
+				prop="categoryIndex"
+				label="类别排序">
 			</el-table-column>
 			<el-table-column
 				:formatter="formatCategory"
@@ -82,7 +91,7 @@
 		},
 		async created () {
 			this.isLoading = true
-			await this.$store.dispatch('product/listProducts', {})
+			await this.$store.dispatch('product/listProducts', { sort: 'index' })
 			this.isLoading = false
 		},
 		methods: {
