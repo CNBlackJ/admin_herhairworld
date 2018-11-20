@@ -262,6 +262,7 @@
 				apiUrl: state => state.apiUrl,
 				isEdit: state => state.product.isEdit,
 				editProductId: state => state.product.editProductId,
+				editProduct: state => state.product.editProduct,
 				imgs: state => state.uploadImgs.imgs,
 				detailImgs: state => state.uploadImgs.detailImgs,
 				categories: state => state.category.categories.filter(ele => ele.isShow),
@@ -274,7 +275,7 @@
 		},
 		data() {
 			return {
-				isLoading: true,
+				isLoading: false,
 				priceLenVisible: false,
 				showClearCusPrice: false,
 				price: 0,
@@ -329,16 +330,15 @@
 		},
 		async created () {
 			await this.$store.dispatch('price/setPriceList')
-			await this.getProduct()
-			this.isLoading = false
+			this.getProduct()
 		},
 		methods: {
-			async getProduct () {
+			getProduct () {
 				if (this.isEdit) {
-					this.prod = await product.getById(this.editProductId)
-					const categoryId = this.prod.category
+					this.prod = JSON.parse(JSON.stringify(this.editProduct))
+					const categoryId = this.prod.category._id
 					this.selectedCategoryName = this.categories.find(ele => String(ele._id) === String(categoryId)).name
-					await this.getProductIndex(categoryId)
+					this.getProductIndex(categoryId)
 				} else {
 					this.prod = {
 						model: `test model name ${new Date()}`,

@@ -16,8 +16,10 @@ export const mutations = {
 }
 
 export const actions = {
-  async setPriceList ({ commit }) {
-    const { rows } = await price.list({ sort: '-createdAt' })
-    commit('SET_PRICE_LIST', rows)
+  async setPriceList ({ state, commit }) {
+    if (!state.priceList.length) {
+      const { rows } = await price.list({ sort: '-createdAt' })
+      commit('SET_PRICE_LIST', rows)
+    }
   }
 }

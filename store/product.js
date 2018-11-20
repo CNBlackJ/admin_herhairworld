@@ -49,8 +49,8 @@ export const actions = {
     commit('SET_PRODUCTS', rows)
     commit('SET_COUNT', count)
   },
-  async setEditProduct ({ state, commit }) {
-    const editProduct = await product.getById(state.editProductId)
+  setEditProduct ({ state, commit }) {
+    const editProduct = state.products.find(ele => String(ele._id) === String(state.editProductId))
     commit('SET_EDIT_PRODUCT', editProduct)
   }
 }

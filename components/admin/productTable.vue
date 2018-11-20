@@ -71,7 +71,8 @@
 			}),
 			...mapState({
 				products: state => state.product.products,
-				isSort: state => state.product.isSort
+				isSort: state => state.product.isSort,
+				categories: state => state.category.categories
 			})
 		},
 		data() {
@@ -88,8 +89,9 @@
 				this.$store.commit('product/SET_EDIT_PRODUCT_ID', row._id)
 				this.$store.commit('uploadImgs/SET_IMGS', row.imgs)
 				this.$store.commit('uploadImgs/STE_DETAIL_IMGS', row.detailImgs.product)
-				await this.$store.dispatch('product/setEditProduct')
-				if(expandedRows.length>1){
+				if (!this.categories.length) await this.$store.dispatch('category/setCategories', { sort: 'index' })
+				this.$store.dispatch('product/setEditProduct')
+				if(expandedRows.length > 1){
           expandedRows.shift()
         }
 			},
