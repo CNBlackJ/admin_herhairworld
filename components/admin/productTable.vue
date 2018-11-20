@@ -15,27 +15,27 @@
 			</el-table-column>
 			<el-table-column
 				show-overflow-tooltip
-			  sortable
-        prop="name"
-        label="名称">
+				sortable
+				prop="name"
+				label="名称">
 			</el-table-column>
 			<el-table-column
 				sortable
-        prop="color"
-        label="颜色">
+				prop="color"
+				label="颜色">
 			</el-table-column>
 			<el-table-column
-        :formatter="formatPrice"
-        label="价格 ($)">
+				:formatter="formatPrice"
+				label="价格 ($)">
 			</el-table-column>
 			<el-table-column
 				sortable
-			  prop="index"
-        label="排序">
+				prop="index"
+				label="排序">
 			</el-table-column>
-      <el-table-column
-        :formatter="formatCategory"
-        label="类别">
+			<el-table-column
+				:formatter="formatCategory"
+				label="类别">
 			</el-table-column>
 			<el-table-column label="状态">
 				<template slot-scope="props">
@@ -70,17 +70,17 @@
 				detailImgs: 'product/detailImgs'
 			}),
 			...mapState({
-				products: state => state.product.products
+				products: state => state.product.products,
+				isSort: state => state.product.isSort
 			})
 		},
 		data() {
 			return {
-				isLoading: true
+				isLoading: false
 			}
 		},
 		async created () {
-			await this.$store.dispatch('product/listProducts', {})
-			this.isLoading = false
+			this.$store.dispatch('product/listProducts', {})
 		},
 		methods: {
 			async handleExpand (row, expandedRows) {

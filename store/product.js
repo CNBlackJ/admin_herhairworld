@@ -5,7 +5,8 @@ export const state = () => ({
   isEdit: false,
   editProductId: '',
   editProduct: {},
-  count: 0
+  count: 0,
+  isSort: false
 })
 
 export const mutations = {
@@ -23,6 +24,9 @@ export const mutations = {
   },
   SET_EDIT_PRODUCT (state, editProduct) {
     state.editProduct = editProduct
+  },
+  SET_IS_SORT (state, isSort) {
+    state.isSort = isSort
   }
 }
 

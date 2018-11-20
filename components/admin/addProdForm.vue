@@ -389,7 +389,6 @@
 			},
 			createProd(formName) {
 				let isValid = true
-				console.log(this.prod)
 				if (!this.prod.customizePrice.length) {
 					isValid = false
 					this.$message({

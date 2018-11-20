@@ -21,6 +21,15 @@
 						产品数据导入
 					</el-button>
 				</el-col>
+				<el-col :xl="3" :lg="3" :offset="1">
+					<el-button
+						type="info" 
+						plain
+						@click="sortProducts">
+						<i class="el-icon-sort el-icon--right"></i>
+						排序
+					</el-button>
+				</el-col>
 			</el-row>
 
 			<el-row>
@@ -30,7 +39,10 @@
 							<el-input v-model="searchCondition.name" placeholder="产品名称"></el-input>
 						</el-form-item>
 						<el-form-item label="产品类型">
-							<el-select v-model="searchCondition.categoryId" placeholder="产品类型">
+							<el-select
+								v-on:click.native="listCategory"
+								v-model="searchCondition.categoryId"
+								placeholder="产品类型">
 								<el-option
 									v-for="category in categories"
 									v-if="category.name !== 'All'"
@@ -115,6 +127,7 @@
 
 <script>
 	import { mapState } from 'vuex'
+	import Sortable from 'sortablejs'
 
 	import productTable from '@/components/admin/productTable'
 	import addProdForm from '@/components/admin/addProdForm'
@@ -128,7 +141,8 @@
 		computed: {
 			...mapState({
 				count: state => state.product.count,
-				categories: state => state.category.categories
+				categories: state => state.category.categories,
+				products: state => state.product.products
 			})
 		},
 		data () {
@@ -145,10 +159,21 @@
 				}
 			}
 		},
-		async created () {
-			await this.$store.dispatch('category/setCategories', { sort: 'index' })
-		},
 		methods: {
+			async listCategory () {
+				if (!this.categories.length) await this.$store.dispatch('category/setCategories', { sort: 'index' })
+			},
+			sortProducts () {
+				this.$store.commit('product/SET_IS_SORT', true)
+				const table = document.querySelector('.el-table__body-wrapper tbody')
+				const products = JSON.parse(JSON.stringify(this.products))
+				Sortable.create(table, {
+					onEnd({ newIndex, oldIndex }) {
+						const targetRow = products.splice(oldIndex, 1)[0]
+						products.splice(newIndex, 0, targetRow)
+					}
+				})
+			},
 			addProduct () {
 				this.$store.commit('product/SET_IS_EDIT', false)
 				this.$store.commit('product/SET_EDIT_PRODUCT_ID', '')
