@@ -402,11 +402,8 @@
 		},
 		async created () {
 			await this.$store.dispatch('page/setPageConfig')
-			await this.$store.dispatch('page/setCategories')
-			this.isLoading = true
-			const { rows } = await product.list({ limit: 4 })
-			this.isLoading = false
-			this.featuredProducts = rows
+			this.$store.dispatch('page/setCategories')
+			// const { rows } = await product.list({ limit: 4 })
 			this.updateSelectedCategories()
 			this.bannerIndex = JSON.parse(JSON.stringify(this.pageConfig.index.banner))
 		},
