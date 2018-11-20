@@ -329,16 +329,18 @@
 			};
 		},
 		async created () {
+			this.isLoading = true
 			await this.$store.dispatch('price/setPriceList')
-			this.getProduct()
+			this.isLoading = false
+			await this.getProduct()
 		},
 		methods: {
-			getProduct () {
+			async getProduct () {
 				if (this.isEdit) {
 					this.prod = JSON.parse(JSON.stringify(this.editProduct))
 					const categoryId = this.prod.category._id
 					this.selectedCategoryName = this.categories.find(ele => String(ele._id) === String(categoryId)).name
-					this.getProductIndex(categoryId)
+					await this.getProductIndex(categoryId)
 				} else {
 					this.prod = {
 						model: `test model name ${new Date()}`,

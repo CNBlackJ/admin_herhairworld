@@ -81,7 +81,9 @@
 			}
 		},
 		async created () {
-			this.$store.dispatch('product/listProducts', {})
+			this.isLoading = true
+			await this.$store.dispatch('product/listProducts', {})
+			this.isLoading = false
 		},
 		methods: {
 			async handleExpand (row, expandedRows) {

@@ -61,8 +61,8 @@ export const actions = {
       }
     }
     `
-    // const { rows, count } = (await graphql.query(query)).product
-    const { rows, count } = await product.list({ limit, skip })
+    const { rows, count } = (await graphql.query(query)).product
+    // const { rows, count } = await product.list({ limit, skip })
     commit('SET_PRODUCTS', rows)
     commit('SET_COUNT', count)
   },
