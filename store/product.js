@@ -1,5 +1,4 @@
 import product from '@/apis/product'
-import graphql from '@/apis/graphql'
 
 export const state = () => ({
   products: [],
@@ -32,37 +31,8 @@ export const mutations = {
 }
 
 export const actions = {
-  async listProducts ({ commit }, { limit = 10, skip = 0 }) {
-    const query = `
-    {
-      product(limit: ${limit}, skip: ${skip}) {
-        count
-        rows{
-          _id
-          name
-          color
-          index
-          categoryIndex
-          category {
-            _id
-            name
-            img
-            index
-            isShow
-          }
-          customizePrice {
-            _id
-            key
-            price
-          }
-          online
-          quantity
-        }
-      }
-    }
-    `
-    // const { rows, count } = (await graphql.query(query)).product
-    const { rows, count } = await product.list({ limit, skip })
+  async listProducts ({ commit }, { limit = 10, skip = 0, categoryId }) {
+    const { rows, count } = await product.list({ limit, skip, categoryId })
     commit('SET_PRODUCTS', rows)
     commit('SET_COUNT', count)
   },

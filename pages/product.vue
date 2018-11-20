@@ -4,30 +4,31 @@
 			<el-row style="margin-bottom: 20px;">
 				<el-col :xl="2" :lg="3">
 					<el-button
-						type="success" 
+						type="success"
+						:disabled="isSortMode"
 						plain
 						@click="addProduct">
 						<i class="el-icon-circle-plus el-icon--right"></i>
 						添加产品
 					</el-button>
 				</el-col>
-				<el-col :xl="3" :lg="3">
+				<el-col :xl="2" :lg="3">
 					<el-button
 						type="primary" 
 						plain
 						disabled
 						@click="uploadDialogVisible = true">
 						<i class="el-icon-upload el-icon--right"></i>
-						产品数据导入
+						数据导入
 					</el-button>
 				</el-col>
-				<el-col :xl="3" :lg="3" :offset="1">
+				<el-col :xl="2" :lg="3">
 					<el-button
-						type="info" 
+						:type="isSortMode ? 'danger' : 'primary'" 
 						plain
 						@click="sortProducts">
-						<i class="el-icon-sort el-icon--right"></i>
-						排序
+						<i class="el-icon--right" :class="{ 'el-icon-sort': !isSortMode, 'el-icon-close': isSortMode }"></i>
+						{{isSortMode ? '结束排序' : '产品排序'}}
 					</el-button>
 				</el-col>
 			</el-row>
@@ -36,7 +37,11 @@
 				<el-col :xl="24" :lg="24">
 					<el-form :inline="true" :model="searchCondition" class="demo-form-inline">
 						<el-form-item label="产品名称">
-							<el-input v-model="searchCondition.name" placeholder="产品名称"></el-input>
+							<el-input
+								:disabled="isSortMode"
+								v-model="searchCondition.name"
+								placeholder="产品名称">
+							</el-input>
 						</el-form-item>
 						<el-form-item label="产品类型">
 							<el-select
@@ -55,6 +60,7 @@
 						<el-form-item label="价格范围">
 							<el-col :span="10">
 								<el-input-number
+									:disabled="isSortMode"
 									:precision="2"
 									v-model="searchCondition.minPrice"
 									:min="0"
@@ -64,6 +70,7 @@
 							<el-col style="text-align:center" :span="1" :offset="2">-</el-col>
 							<el-col :span="10">
 								<el-input-number
+									:disabled="isSortMode"
 									:precision="2"
 									v-model="searchCondition.maxPrice"
 									:min="0"
@@ -72,10 +79,14 @@
 							</el-col>
 						</el-form-item>
 						<el-form-item label="库存状态" prop="delivery">
-							<el-switch v-model="searchCondition.stock"></el-switch>
+							<el-switch
+								:disabled="isSortMode"
+								v-model="searchCondition.stock">
+							</el-switch>
 						</el-form-item>
 						<el-form-item>
-							<el-button size="small" type="primary" @click="searchProd">查询</el-button>
+							<el-button v-if="isSortMode" size="small" type="success" @click="listSortProducts">查询</el-button>
+							<el-button v-else size="small" type="primary" @click="searchProd">查询</el-button>
 						</el-form-item>
 					</el-form>
 				</el-col>
@@ -89,7 +100,7 @@
 			element-loading-background="hsla(0,0%,100%,.9)"
 			></productTable>
 
-		<div class="products-pagination">
+		<div v-if="!isSortMode" class="products-pagination">
 			<el-pagination
 				background
 				layout="prev, pager, next"
@@ -150,6 +161,8 @@
 				isLoading: false,
 				uploadDialogVisible: false,
 				addProdDialogVisible: false,
+				isSortMode: false,
+				sortedCategory: '',
 				searchCondition: {
 					name: '',
 					categoryId: '',
@@ -164,15 +177,21 @@
 				if (!this.categories.length) await this.$store.dispatch('category/setCategories', { sort: 'index' })
 			},
 			sortProducts () {
+				this.isSortMode = !this.isSortMode
 				this.$store.commit('product/SET_IS_SORT', true)
 				const table = document.querySelector('.el-table__body-wrapper tbody')
 				const products = JSON.parse(JSON.stringify(this.products))
 				Sortable.create(table, {
+					disabled: !this.isSortMode,
 					onEnd({ newIndex, oldIndex }) {
 						const targetRow = products.splice(oldIndex, 1)[0]
 						products.splice(newIndex, 0, targetRow)
+						console.log(newIndex, oldIndex)
 					}
 				})
+			},
+			async listSortProducts () {
+				await this.$store.dispatch('product/listProducts', { limit: 10000, categoryId: this.searchCondition.categoryId })
 			},
 			addProduct () {
 				this.$store.commit('product/SET_IS_EDIT', false)
