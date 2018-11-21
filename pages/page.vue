@@ -412,6 +412,7 @@
 				const pageConfig = JSON.parse(JSON.stringify(this.pageConfig))
 				pageConfig.faeturedProducts = this.featureProductIds
 				this.$store.dispatch('page/updatePageConfig', pageConfig)
+				await this.$store.dispatch('page/setPageConfig')
 			},
 			async changeBannerImg (imgId) {
 				this.$store.commit('uploadDialog/SET_IS_SHOW')
