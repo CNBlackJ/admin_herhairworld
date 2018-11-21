@@ -33,16 +33,6 @@
 				label="价格 ($)">
 			</el-table-column>
 			<el-table-column
-				sortable
-				prop="index"
-				label="排序">
-			</el-table-column>
-			<el-table-column
-				sortable
-				prop="categoryIndex"
-				label="类别排序">
-			</el-table-column>
-			<el-table-column
 				:formatter="formatCategory"
 				label="类别">
 			</el-table-column>
