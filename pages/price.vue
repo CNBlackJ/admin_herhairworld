@@ -188,12 +188,12 @@
 				this.isLoading = true
 				const row = rows[index]
 				await price.delete(row._id)
+				await this.listPrice()
 				this.isLoading = false
 				this.$message({
 					message: '删除成功',
 					type: 'success'
 				});
-				await this.listPrice()
 			}
 		}
 	}
