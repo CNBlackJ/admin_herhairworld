@@ -476,6 +476,7 @@
 							return { name: img.name, url: img.url }
 						})
 						this.prod.detailImgs.product = detailProductImgs
+						this.prod.category = this.prod.category._id
 						await product.update({ prod: this.prod })
 						this.$message({
 							message: '更新产品成功',
