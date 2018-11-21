@@ -8,7 +8,7 @@ export default class user {
     return resp.data
   }
 
-  static async create ({ adminUser }) {
+  static async create (adminUser) {
     delete adminUser.pwConfirm
     adminUser.password = md5(adminUser.password)
     const resp = await request.post('/api/adminUsers', adminUser)

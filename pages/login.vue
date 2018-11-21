@@ -2,7 +2,7 @@
 	<div class="admin-login-container">
 		<el-row>
 			<el-col :span="6" :offset="8">
-				<el-form :rules="adminLoginFormRules" ref="adminLoginForm">
+				<el-form :model="adminLoginForm" :rules="adminLoginFormRules" ref="adminLoginForm">
 					<el-form-item label="用户名" prop="username">
 						<el-input
 							v-model="adminLoginForm.username"></el-input>
