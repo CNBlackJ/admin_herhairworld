@@ -345,6 +345,7 @@
 		methods: {
 			async getProduct () {
 				if (this.isEdit) {
+					await this.$store.dispatch('product/setEditProduct')
 					this.prod = JSON.parse(JSON.stringify(this.editProduct))
 					const categoryId = this.prod.category._id
 					this.selectedCategoryName = this.categories.find(ele => String(ele._id) === String(categoryId)).name
@@ -420,6 +421,7 @@
 						this.prod.detailImgs.product = this.detailImgs
 						this.isLoading = true
 						await product.create(this.prod)
+						this.prod = {}
 						this.isLoading = false
 						this.$emit('closeAddProdForm')
 						this.$message({
