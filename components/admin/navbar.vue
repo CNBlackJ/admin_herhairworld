@@ -1,13 +1,20 @@
 <template>
 	<div class="admin-nav-con">
 		<div class="ad-nav-left">
-			
+				<!-- @click="goLogin" -->
 		</div>
 		<div class="ad-nav-right">
-			<img
-				@click="goLogin"
-				class="navbar-icon icon-user"
-				src="https://herhairword-1255936829.cos.ap-guangzhou.myqcloud.com/user.png">
+			<el-dropdown>
+				<el-button style="padding: 0;" type="primary" size="small">
+					<img
+						class="navbar-icon icon-user"
+						src="https://herhairword-1255936829.cos.ap-guangzhou.myqcloud.com/user.png">
+				</el-button>
+				<el-dropdown-menu slot="dropdown">
+					<el-dropdown-item>修改密码</el-dropdown-item>
+					<el-dropdown-item>退出登陆</el-dropdown-item>
+				</el-dropdown-menu>
+			</el-dropdown>
 		</div>
 	</div>
 </template>
@@ -24,6 +31,10 @@
 </script>
 
 <style>
+	.ad-nav-right {
+		margin-right: 20px;
+	}
+
 	.admin-nav-con {
 		display: flex;
 		flex-direction: row;

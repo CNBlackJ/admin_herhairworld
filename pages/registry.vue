@@ -1,6 +1,6 @@
 <template>
-	<div class="user-con">
-		I am user
+	<div class="registry-con">
+		Admin user registry
 	</div>
 </template>
 
