@@ -243,6 +243,10 @@
 			cancelSort () {
 				this.$store.commit('product/SET_IS_SORT_MODE', false)
 				this.sortedProducts = []
+				const { categoryId } = this.searchCondition
+				const condition = { categoryId }
+				if (categoryId) condition.sort = categoryId ? 'categoryIndex' : 'index'
+				this.$store.dispatch('product/listProducts', condition)
 			},
 			async listSortProducts () {
 				const { categoryId } = this.searchCondition
@@ -275,7 +279,10 @@
 			async currentChange (currentPage) {
 				this.isLoading = true
 				const pageSize = 10
-				await this.$store.dispatch('product/listProducts', { skip: (currentPage-1) * pageSize, limit: pageSize })
+				const { categoryId } = this.searchCondition
+				const condition = { skip: (currentPage-1) * pageSize, limit: pageSize, categoryId }
+				if (categoryId) condition.sort = categoryId ? 'categoryIndex' : 'index'
+				await this.$store.dispatch('product/listProducts', condition)
 				this.isLoading = false
 			}
 		}
