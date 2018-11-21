@@ -254,12 +254,13 @@
 				condition.sort = categoryId ? 'categoryIndex' : 'index'
 				await this.$store.dispatch('product/listProducts', condition)
 			},
-			addProduct () {
+			async addProduct () {
 				this.$store.commit('product/SET_IS_EDIT', false)
 				this.$store.commit('product/SET_EDIT_PRODUCT_ID', '')
 				this.$store.commit('product/SET_EDIT_PRODUCT', {})
 				this.$store.commit('uploadImgs/STE_DETAIL_IMGS', [])
 				this.$store.commit('uploadImgs/SET_IMGS', [])
+				await this.$store.dispatch('category/setCategories', { sort: 'index' })
 				this.addProdDialogVisible = true
 			},
 			async searchProd () {
