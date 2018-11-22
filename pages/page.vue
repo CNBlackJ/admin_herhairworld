@@ -178,6 +178,55 @@
 							</el-row>
 						</el-card>
 					</el-row>
+
+					<el-row>
+						<el-card>
+							<div slot="header">
+								<span>Why Choose Us</span>
+								<el-button style="float: right; padding: 3px 0" type="text">+ 添加</el-button>
+							</div>
+							<el-row>
+								<el-col :span="12">
+									<div class="choose-container">
+										<div class="choose-img-container" v-for="c in choices" :key="c.id">
+											<img class="choose-img" :src="'https://herhairword-1255936829.cos.ap-guangzhou.myqcloud.com/' + c.img"/>
+										</div>
+									</div>
+									<div class="choose-container">
+										<div class="choose-img-container" v-for="c in choices" :key="c.id">
+											<div class="choose-title">{{c.title}}</div>
+										</div>
+									</div>
+								</el-col>
+								<el-col :span="12">
+									<div class="social-content">
+										<div class="social-left">
+											<div class="social-img-con">
+												<img class="social-img" src="https://herhairword-1255936829.cos.ap-guangzhou.myqcloud.com/why_choose_us_5.png">
+											</div>
+											<div class="name">Brittany Hunter</div>
+											<div class="address">New York, USA</div>
+										</div>
+								
+										<div class="social-rigth">
+											<p>
+												I am a hair enthusiast, that love the versatility that hair 
+												extensions provide. My goal is to provide my customers 
+												with quality hair that they can wear time after time ( with 
+												proper care).My business motto is " love the hair you 
+												wear".
+											</p>
+										</div>
+									</div>
+								</el-col>
+							</el-row>
+							<el-alert
+								title="该模块自定义配置稍后开放"
+								type="info"
+								show-icon>
+							</el-alert>
+						</el-card>
+					</el-row>
 				</div>
 			</el-card>
 		</el-row>
@@ -318,7 +367,7 @@
 				<el-card>
 					<div slot="header">
 						<span>
-							产品详情设置
+							Featured Products
 						</span>
 						<i class="el-icon-info" style="float: right; padding: 3px 0"></i>
 					</div>
@@ -396,6 +445,12 @@
 						categories: []
 					}
 				},
+        choices: [
+          { id: 1, title: 'High Quality', img: 'why_choose_us_1.jpg' },
+          { id: 2, title: 'Hugu Profit', img: 'why_choose_us_2.jpg' },
+          { id: 3, title: 'Fast Shipment', img: 'why_choose_us_3.jpg' },
+          { id: 4, title: 'Branding', img: 'why_choose_us_4.jpg' }
+        ],
 				editServiceId: '',
 				editBannerId: '',
 				serviceDescription: '',
@@ -538,6 +593,11 @@
 		margin-bottom: 10px;
 	}
 
+	.main-body {
+		background-color: transparent;
+		padding: 0;
+	}
+
 	.setting-slide-img {
     width: 100%;
     display: block;
@@ -654,5 +714,63 @@
 		height: auto;
 		max-width: 100%;
 		max-height: 100%;	
+	}
+
+	.choose-container {
+    padding: 0 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+  }
+
+  .choose-img-container {
+    padding: 0 5px;
+    width: 20%;
+  }
+
+  .choose-img {
+    border-radius: 50%;
+    width: 100%;
+  }
+
+  .choose-title {
+    font-size: 70%;
+    text-align: center;
+  }
+
+	.social-content {
+		display: flex;
+		flex-direction: row;
+	}
+
+	.social-left {
+		padding: 0 5px;
+	}
+
+	.social-img-con {
+		width: 84px;
+		height: 84px;
+	}
+
+	.social-img {
+		width: auto;
+		height: auto;
+		max-width: 100%;
+		max-height: 100%;
+	}
+
+	.name {
+		padding-top: 10px;
+		font-size: 70%;
+	}
+
+	.address {
+		font-size: 70%;
+	}
+
+	.social-rigth {
+		padding: 0 5px;
+		font-size: 14px;
 	}
 </style>
