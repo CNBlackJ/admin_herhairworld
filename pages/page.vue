@@ -73,7 +73,6 @@
 								<el-button style="float: right; padding: 3px 0" type="text">+ 添加</el-button>
 							</div>
 							<el-row class="setting-service-content-con">
-
 								<el-col
 									v-for="service in pageConfig.index.services"
 									:key="service._id"
@@ -100,46 +99,45 @@
 									</el-row>
 									<el-row>
 										<div class="setting-service-text">
-											<el-form v-if="editServiceId === service._id" :inline="true">
-												<el-form-item
-													size="small"
-													label="标题">
-													<el-input v-model="serviceTitle" type="text"></el-input>
-												</el-form-item>
-												<el-form-item
-													label="描述">
-													<el-input
-														:rows="4"
-														v-model="serviceDescription"
-														type="textarea">
-													</el-input>
-												</el-form-item>
-												<el-form-item>
-													<el-button
-														@click='editServiceId = null '
-														size="small">
-														取消
-													</el-button>
-													<el-button
-														@click="updateService(service._id)"
-														size="small">
-														更新
-													</el-button>
-												</el-form-item>
-											</el-form>
+											<div v-if="editServiceId === service._id">
+												<el-form :inline="true">
+													<el-form-item
+														size="small"
+														label="标题">
+														<el-input v-model="serviceTitle" type="text"></el-input>
+													</el-form-item>
+													<el-form-item
+														size="small"
+														label="按钮">
+														<el-input v-model="serviceBtn" type="text"></el-input>
+													</el-form-item>
+													<el-form-item
+														size="small"
+														label="描述">
+														<el-input
+															:rows="4"
+															v-model="serviceDescription"
+															type="textarea">
+														</el-input>
+													</el-form-item>
+												</el-form>
+											</div>
 											<div v-else>
 												<div class="setting-service-title">
-														{{service.title}}
+													<b>{{service.title}}</b>
 												</div>
-												<span>
-													{{service.description}}
-												</span>
+												<div>
+														{{service.description}}
+												</div>
+												<div class="setting-service-btntext">
+													{{service.btn}}
+												</div>
 											</div>
 										</div>
 									</el-row>
 									<el-row>
 										<div
-											v-show="editServiceId !== service._id"
+											v-if="editServiceId !== service._id"
 											class="setting-service-btns">
 											<el-button
 												@click="editService(service._id)"
@@ -158,6 +156,21 @@
 												size="small"
 												type="danger">
 												隐藏
+											</el-button>
+										</div>
+										<div
+											v-else
+											class="setting-service-btns">
+											<el-button
+												@click='editServiceId = null '
+												size="small">
+												取消
+											</el-button>
+											<el-button
+												@click="updateService(service._id)"
+												type="success"
+												size="small">
+												更新
 											</el-button>
 										</div>
 									</el-row>
@@ -387,6 +400,7 @@
 				editBannerId: '',
 				serviceDescription: '',
 				serviceTitle: '',
+				serviceBtn: '',
 				bannerPath: '',
 				bannerIndex: [],
 				selectedCategories: {
@@ -444,6 +458,7 @@
 				const service = _.find(services, service => service._id === serviceId)
 				this.serviceDescription = service.description
 				this.serviceTitle = service.title
+				this.serviceBtn = service.btn
 				this.editServiceId = serviceId
 			},
 			async hideService (serviceId) {
@@ -468,6 +483,7 @@
 					if (ele._id === serviceId) {
 						ele.title = this.serviceTitle
 						ele.description = this.serviceDescription
+						ele.btn = this.serviceBtn
 					}
 					return ele
 				})
@@ -571,13 +587,25 @@
 
 	.setting-service-text {
 		font-size: 12px;
-		text-align: center;
-		height: 100px;
+		text-align: left;
+		height: auto;
 	}
 
 	.setting-service-title {
-		font-size: 18px;
 		padding-bottom: 10px;
+		text-transform: uppercase;
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+	}
+
+	.setting-service-btntext {
+		text-transform: uppercase;
+		margin-top: 10px;
+		text-align: center;
+		padding: 5px 0;
+		color: white;
+		background-color: #dd127b;
 	}
 
 	.setting-service-btns {
