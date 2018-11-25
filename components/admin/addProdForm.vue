@@ -38,19 +38,22 @@
 						<el-input v-model="prod.material"></el-input>
 					</el-form-item>
 				</el-col>
-				<el-col :span="8">
-					<el-form-item label="重量(g)" required>
-						<el-col :span="11">
-							<el-form-item prop="minWeight">
-								<el-input v-model.number="prod.minWeight"></el-input>
-							</el-form-item>
-						</el-col>
-						<el-col style="text-align:center" :span="2">-</el-col>
-						<el-col :span="11">
-							<el-form-item prop="maxWeight">
-								<el-input v-model.number="prod.maxWeight"></el-input>
-							</el-form-item>
-						</el-col>
+				<el-col :span="6">
+					<el-form-item label="重量(g)" required prop="maxWeight">
+						<el-input-number
+							v-model="prod.maxWeight"
+							:min="0"
+							label="描述文字">
+						</el-input-number>
+					</el-form-item>
+				</el-col>
+				<el-col :span="6">
+					<el-form-item label="邮费" required>
+						<el-switch
+							v-model="prod.isFreeShipping"
+							active-text="免费"
+							inactive-text="按重计费">
+						</el-switch>
 					</el-form-item>
 				</el-col>
 			</el-row>
@@ -319,10 +322,6 @@
 					color: [
 						{ required: true, message: '请输入产品颜色', trigger: 'blur' }
 					],
-					minWeight: [
-						{ type: 'number', required: true, message: '请输入产品最小重量', trigger: 'blur' },
-						{ type: 'number', message: '产品重量必须为数字', trigger: 'blur' }
-					],
 					maxWeight: [
 						{ type: 'number', required: true, message: '请输入产品最大重量', trigger: 'blur' },
 						{ type: 'number', message: '产品重量必须为数字', trigger: 'blur' }
@@ -373,7 +372,8 @@
 						maxWeight: 110,
 						online: true,
 						lengths: [],
-						customizePrice: []
+						customizePrice: [],
+						isFreeShipping: false
 					}
 				}
 				this.olderPriceType = this.prod.priceId
