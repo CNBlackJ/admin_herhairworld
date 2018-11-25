@@ -26,11 +26,11 @@ export default ({ app, store, redirect }) => {
   })
 
   axios.interceptors.response.use(response => {
-    if (response.data.code === 401) {
-      redirect('/login')
-    }
     return response
   }, function (error) {
-    return Promise.reject(error)
+    if (error.response.status === 401) {
+      redirect('/login')
+    }
+    return Promise.reject(error.response)
   })
 }
