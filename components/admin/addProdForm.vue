@@ -39,21 +39,23 @@
 					</el-form-item>
 				</el-col>
 				<el-col :span="6">
-					<el-form-item label="重量(g)" required prop="maxWeight">
-						<el-input-number
-							v-model="prod.maxWeight"
-							:min="0"
-							label="描述文字">
-						</el-input-number>
-					</el-form-item>
-				</el-col>
-				<el-col :span="6">
 					<el-form-item label="邮费" required>
 						<el-switch
 							v-model="prod.isFreeShipping"
 							active-text="免费"
 							inactive-text="按重计费">
 						</el-switch>
+					</el-form-item>
+				</el-col>
+				<el-col
+					v-if="!prod.isFreeShipping"
+					:span="6">
+					<el-form-item label="重量(g)" required prop="maxWeight">
+						<el-input-number
+							v-model="prod.maxWeight"
+							:min="0"
+							label="描述文字">
+						</el-input-number>
 					</el-form-item>
 				</el-col>
 			</el-row>
@@ -368,8 +370,8 @@
 						detailImgs: {
 							product: []
 						},
-						minWeight: 90,
-						maxWeight: 110,
+						minWeight: 0,
+						maxWeight: 0,
 						online: true,
 						lengths: [],
 						customizePrice: [],
