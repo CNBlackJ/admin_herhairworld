@@ -206,7 +206,7 @@
 				}
 			},
 			async listCategory () {
-				if (!this.categories.length) await this.$store.dispatch('category/setCategories', { sort: 'index' })
+				await this.$store.dispatch('category/setCategories', { sort: 'index' })
 			},
 			async sortProducts () {
 				this.$store.commit('product/SET_IS_SORT_MODE', true)

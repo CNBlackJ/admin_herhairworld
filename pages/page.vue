@@ -593,11 +593,6 @@
 		margin-bottom: 10px;
 	}
 
-	.main-body {
-		background-color: transparent;
-		padding: 0;
-	}
-
 	.setting-slide-img {
     width: 100%;
     display: block;
