@@ -369,36 +369,20 @@
 						<span>
 							Featured Products
 						</span>
-						<i class="el-icon-info" style="float: right; padding: 3px 0"></i>
+						<el-button
+							@click="showFeaturedProdDialog = true"
+							style="float: right; padding: 3px 0"
+							type="text">
+							+ 添加
+						</el-button>
 					</div>
 					<div>
 						<el-row>
 							<el-col
 								:span="6"
-								v-for="(featuredProduct, i) in featuredProducts"
+								v-for="featuredProduct in pageConfig.faeturedProducts"
 								:key="featuredProduct._id">
-								<el-popover
-									placement="top-start"
-									trigger="hover">
-									<div>
-										<el-row>
-											<el-col :span="16">
-												<el-input size="middle" v-model="featureProductIds[i]" placeholder="请输入内容"></el-input>
-											</el-col>
-											<el-col :span="6" :offset="2">
-												<el-button
-													size="middle"
-													type="primary"
-													@click="updateFeatureProd(i)">
-													确认
-												</el-button>
-											</el-col>
-										</el-row>
-									</div>
-									<div slot="reference" class="fd-img-con">
-										<img class="fd-img" :src="featuredProduct.mainImg">
-									</div>
-								</el-popover>
+								<!-- {{featuredProduct}} -->
 							</el-col>
 						</el-row>
 					</div>
@@ -409,6 +393,20 @@
 		<no-ssr>
 			<uploadDialog></uploadDialog>
 		</no-ssr>
+
+		<el-dialog
+			title="Featured Products"
+			:visible.sync="showFeaturedProdDialog"
+			width="30%"
+			:before-close="handleFeaturedProdDialogClose">
+			<div>
+				<el-input v-model="featuredProductId" size="small"></el-input>
+			</div>
+			<span slot="footer" class="dialog-footer">
+				<el-button @click="handleFeaturedProdDialogClose">取 消</el-button>
+				<el-button :disabled="!featuredProductId" type="primary" @click="addFeaturedProduct">确 定</el-button>
+			</span>
+		</el-dialog>
 	</div>
 </template>
 
@@ -438,6 +436,7 @@
 		data () {
 			return {
 				isLoading: false,
+				showFeaturedProdDialog: false,
 				pageConfigForm: {
 					index: {
 						banner: [],
@@ -466,7 +465,8 @@
 					e: ''
 				},
 				featuredProducts: [],
-				featureProductIds: []
+				featureProductIds: [],
+				featuredProductId: ''
 			}
 		},
 		async created () {
@@ -583,6 +583,16 @@
 					const key = 97 + Number(ele.index)
 					this.selectedCategories[String.fromCharCode(key)] = ele.url
 				})
+			},
+			handleFeaturedProdDialogClose () {
+				this.featuredProductId = ''
+				this.showFeaturedProdDialog = false
+			},
+			async addFeaturedProduct () {
+				this.showFeaturedProdDialog = false
+				const payload = JSON.parse(JSON.stringify(this.pageConfig))
+				payload.faeturedProducts.push(this.featuredProductId)
+				await this.$store.dispatch('page/updatePageConfig', payload)
 			}
 		}
 	}
