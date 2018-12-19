@@ -43,17 +43,28 @@
 				width="50">
 			</el-table-column>
       <el-table-column
+        prop="_id"
+        label="订单号">
+			</el-table-column>
+      <el-table-column
+        prop="userId"
+        label="用户">
+			</el-table-column>
+      <el-table-column
+        prop="price"
+        label="订单总金额">
+			</el-table-column>
+      <el-table-column
+        prop="status"
+        label="订单状态">
+			</el-table-column>
+      <el-table-column
         prop="email"
         label="邮箱">
 			</el-table-column>
       <el-table-column
         prop="mobile"
         label="联系电话">
-			</el-table-column>
-      <el-table-column
-				:formatter="formatProduct"
-				show-overflow-tooltip
-        label="产品">
 			</el-table-column>
 			<el-table-column
         :formatter="formatDate"
@@ -101,12 +112,6 @@
 		methods: {
 			formatDate (row) {
 				return moment(row.createdAt).format('YYYY-MM-DD HH:mm')
-			},
-			formatProduct (row) {
-				const names = row.products.map((ele, index) => {
-					return (index ? '、' : '') + ele.productId.name
-				})
-				return names
 			},
 			async currentChange (currentPage) {
 				this.isLoading = true

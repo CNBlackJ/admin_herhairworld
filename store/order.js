@@ -2,7 +2,9 @@ import order from '@/apis/order'
 
 export const state = () => ({
   orders: [],
-  count: 0
+  count: 0,
+  orderList: [],
+  orderData: {}
 })
 
 export const mutations = {
