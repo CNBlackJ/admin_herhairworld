@@ -80,16 +80,31 @@
 				@current-change="currentChange">
 			</el-pagination>
 		</div>
+
+		<el-dialog
+			title="订单详情"
+			:visible.sync="dialogVisible"
+			width="80%">
+			<detail :order="selectedOrder"/>
+			<span slot="footer" class="dialog-footer">
+				<el-button @click="dialogVisible = false">取 消</el-button>
+				<el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+			</span>
+		</el-dialog>
 	</div>
 </template>
 
 <script>
 	import { mapState, mapGetters } from 'vuex'
-
 	import moment from 'moment'
+
+	import detail from './detail'
 
 	export default {
 		layout: 'admin',
+		components: {
+			detail
+		},
 		computed: {
 			...mapState({
 				orders: state => state.order.orders,
@@ -101,7 +116,9 @@
 		},
 		data () {
 			return {
-				isLoading: false
+				isLoading: false,
+				dialogVisible: false,
+				selectedOrder: {}
 			}
 		},
 		async created () {
@@ -121,6 +138,8 @@
 			},
 			showOrderDetail (row) {
 				console.log(row)
+				this.dialogVisible = true
+				this.selectedOrder = row
 			}
 		}
 	}
