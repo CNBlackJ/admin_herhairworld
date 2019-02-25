@@ -54,6 +54,11 @@
 			</el-table-column>
 			<el-table-column
 				show-overflow-tooltip
+				:formatter="formatSendPage"
+				label="询盘入口">
+			</el-table-column>
+			<el-table-column
+				show-overflow-tooltip
         prop="comment"
         label="留言内容">
 			</el-table-column>
@@ -132,6 +137,11 @@
 				})
 				return result
 			},
+			formatSendPage (row) {
+				const sendPage = row.sendPage || {}
+				if (!sendPage.path && !sendPage.additional) return ' - '
+				return `路径: ${sendPage.path}; 备注: ${sendPage.additional}`
+			},
 			async currentChange (currentPage) {
 				this.isLoading = true
 				const pageSize = 10
@@ -142,6 +152,7 @@
 				const { rows } = (await inquiry.list({ limit: this.count, skip: 0 }))
 				const data = rows.map(row => {
 					row.businessTypes = this.formatBusinessTypes(row)
+					row.sendPage = this.formatSendPage(row)
 					delete row.__v
 					return row
 				})
