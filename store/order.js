@@ -4,7 +4,8 @@ export const state = () => ({
   orders: [],
   count: 0,
   orderList: [],
-  orderData: {}
+  orderData: {},
+  orderSummary: {}
 })
 
 export const mutations = {
@@ -13,6 +14,9 @@ export const mutations = {
   },
   SET_COUNT (state, count) {
     state.count = count || 0
+  },
+  SET_ORDER_SUMMARY (state, orderSummary) {
+    state.orderSummary = orderSummary
   }
 }
 
@@ -21,6 +25,11 @@ export const actions = {
     const { rows, count } = await order.list({ sort, limit, skip })
     commit('SET_ORDERS', rows)
     commit('SET_COUNT', count)
+  },
+  async getOrderSummary ({ commit }) {
+    const orderSummary = await order.summary()
+    commit('SET_ORDER_SUMMARY', orderSummary)
+    return orderSummary
   }
 }
 

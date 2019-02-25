@@ -19,4 +19,11 @@ export default class order {
     const resp = await request.put(`/api/order/${id}`, order)
     return resp.data
   }
+
+  static async summary () {
+    const resp = (await request.get('/api/orders/summary')).data
+    let result = null
+    if (!resp.error_code) result = resp.data
+    return result
+  }
 }

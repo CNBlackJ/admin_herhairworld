@@ -7,7 +7,7 @@
 						今日订单
 					</div>
 					<div>
-						100
+						{{orderSummary.todayOrders}}
 					</div>
 				</div>
 				<div class="os-item os-item-border">
@@ -15,7 +15,7 @@
 						已发货订单
 					</div>
 					<div>
-						100
+						{{orderSummary.dispatchedOrders}}
 					</div>
 				</div>
 				<div class="os-item">
@@ -23,7 +23,7 @@
 						待处理订单
 					</div>
 					<div>
-						100
+						{{orderSummary.dispatchingOrders}}
 					</div>
 				</div>
 			</div>
@@ -107,7 +107,8 @@
 		computed: {
 			...mapState({
 				orders: state => state.order.orders,
-				count: state => state.order.count
+				count: state => state.order.count,
+				orderSummary: state => state.order.orderSummary
 			}),
 			...mapGetters({
 				orderDetails: 'order/orderDetails'
@@ -123,6 +124,7 @@
 		async created () {
 			this.isLoading = true
 			await this.$store.dispatch('order/setOrders', {})
+			await this.$store.dispatch('order/getOrderSummary')
 			this.isLoading = false
 		},
 		methods: {
