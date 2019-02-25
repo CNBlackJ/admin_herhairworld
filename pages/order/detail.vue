@@ -2,6 +2,11 @@
 	<div>
 		<div class="order-userinfo">
 			<el-row style="padding-bottom: 10px;">
+					<el-steps :space="200" :active="order.status + 1" finish-status="success" align-center>
+						<el-step v-for="(item, i) in Object.values(orderStatusMap)" :key="i" :title="item"></el-step>
+					</el-steps>
+			</el-row>
+			<el-row style="padding-bottom: 10px;">
 				<el-col>
 					<el-card>
 						<div class="detail-card-title">
@@ -63,7 +68,7 @@
 					<el-card>
 						<div class="detail-card-title">邮寄地址:</div>
 						<div>
-							<div class="detail-item" v-for="(item, i) in Object.keys(payerInfo.shipping_address)" :key="i">
+							<div class="detail-item" v-for="(item, i) in Object.keys(payerInfo.shipping_address || [])" :key="i">
 								<span>{{item}}:</span> {{payerInfo.shipping_address[item]}}
 							</div>
 						</div>
@@ -73,7 +78,7 @@
 					<el-card>
 						<div class="detail-card-title">账单地址:</div>
 						<div>
-							<div class="detail-item" v-for="(item, i) in Object.keys(payerInfo.billing_address)" :key="i">
+							<div class="detail-item" v-for="(item, i) in Object.keys(payerInfo.billing_address || [])" :key="i">
 								<span>{{item}}:</span> {{payerInfo.billing_address[item]}}
 							</div>
 						</div>
@@ -90,12 +95,27 @@
 		props: ['order'],
 		data () {
 			return {
-				payerInfo: {},
-				activeNames: []
+				payerInfo: {
+					shipping_address: {},
+					billing_address: {}
+				},
+				activeNames: [],
+				orderStatusMap: {
+					0: '待付款',
+					1: '已付款',
+					2: '待发货',
+					3: '已发货',
+					4: '已完成'
+				}
 			}
 		},
 		created () {
 			this.getPayerInfo()
+		},
+		watch: {
+			order () {
+				this.getPayerInfo()
+			}
 		},
 		methods: {
 			getPayerInfo () {

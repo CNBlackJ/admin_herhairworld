@@ -35,7 +35,7 @@
 			element-loading-spinner="el-icon-loading"
 			element-loading-background="hsla(0,0%,100%,.9)"
 			class="order-table"
-			v-on:cell-click="showOrderDetail"
+			v-on:row-click="showOrderDetail"
       :data="orderDetails"
 			style="width: 100%">
 			<el-table-column
@@ -87,7 +87,6 @@
 			width="80%">
 			<detail :order="selectedOrder"/>
 			<span slot="footer" class="dialog-footer">
-				<el-button @click="dialogVisible = false">取 消</el-button>
 				<el-button type="primary" @click="dialogVisible = false">确 定</el-button>
 			</span>
 		</el-dialog>
@@ -137,9 +136,8 @@
 				this.isLoading = false
 			},
 			showOrderDetail (row) {
-				console.log(row)
-				this.dialogVisible = true
 				this.selectedOrder = row
+				this.dialogVisible = true
 			}
 		}
 	}
