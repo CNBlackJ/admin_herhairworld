@@ -2,7 +2,7 @@
 	<div>
 		<div class="order-userinfo">
 			<el-row style="padding-bottom: 10px;">
-					<el-steps :space="200" :active="order.status + 1" finish-status="success" align-center>
+					<el-steps :space="200" :active="order.status" finish-status="success" align-center>
 						<el-step v-for="(item, i) in Object.values(orderStatusMap)" :key="i" :title="item"></el-step>
 					</el-steps>
 			</el-row>
@@ -101,11 +101,11 @@
 				},
 				activeNames: [],
 				orderStatusMap: {
-					0: '待付款',
-					1: '已付款',
-					2: '待发货',
-					3: '已发货',
-					4: '已完成'
+					1: '待支付',
+					2: '已支付',
+					3: '待发货',
+					4: '已发货',
+					5: '已完成'
 				}
 			}
 		},
