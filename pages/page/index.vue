@@ -605,6 +605,7 @@
 				const payload = JSON.parse(JSON.stringify(this.pageConfig))
 				payload.index.floatBtns = this.floatBtns
 				await this.$store.dispatch('page/updatePageConfig', payload)
+				this.$message({ message: '更新成功', type: 'success' })
 			}
 		}
 	}
