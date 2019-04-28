@@ -480,6 +480,7 @@
 			// const { rows } = await product.list({ limit: 4 })
 			this.updateSelectedCategories()
 			this.bannerIndex = JSON.parse(JSON.stringify(this.pageConfig.index.banner))
+			this.floatBtns = JSON.parse(JSON.stringify(this.pageConfig.index.floatBtns))
 		},
 		methods: {
 			async updateFeatureProd(index) {
