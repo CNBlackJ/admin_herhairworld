@@ -367,22 +367,37 @@
 				<el-card>
 					<div slot="header">
 						<span>
-							Featured Products
+							iMessage & whatsapp
 						</span>
-						<el-button
-							@click="showFeaturedProdDialog = true"
-							style="float: right; padding: 3px 0"
-							type="text">
-							+ 添加
-						</el-button>
 					</div>
 					<div>
-						<el-row>
-							<el-col
-								:span="6"
-								v-for="featuredProduct in pageConfig.faeturedProducts"
-								:key="featuredProduct._id">
-								<!-- {{featuredProduct}} -->
+						<el-row type="flex" align="middle">
+							<el-col :span="4">
+								iMessage:
+							</el-col>
+							<el-col :span="12">
+								<el-input
+									size="small"
+									placeholder="请输入11位iMessage手机号"
+									v-model="floatBtns.iMessage">
+								</el-input>
+							</el-col>
+						</el-row>
+						<el-row type="flex" align="middle">
+							<el-col :span="4">
+								whatsapp:
+							</el-col>
+							<el-col :span="12">
+								<el-input
+									size="small"
+									placeholder="请输入11位whatsapp手机号"
+									v-model="floatBtns.whatsapp">
+								</el-input>
+							</el-col>
+						</el-row>
+						<el-row type="flex" align="middle">
+							<el-col :span="4" :offset="12">
+								<el-button size="small" @click="updateFloatBtns">保存更新</el-button>
 							</el-col>
 						</el-row>
 					</div>
@@ -393,20 +408,6 @@
 		<no-ssr>
 			<uploadDialog></uploadDialog>
 		</no-ssr>
-
-		<el-dialog
-			title="Featured Products"
-			:visible.sync="showFeaturedProdDialog"
-			width="30%"
-			:before-close="handleFeaturedProdDialogClose">
-			<div>
-				<el-input v-model="featuredProductId" size="small"></el-input>
-			</div>
-			<span slot="footer" class="dialog-footer">
-				<el-button @click="handleFeaturedProdDialogClose">取 消</el-button>
-				<el-button :disabled="!featuredProductId" type="primary" @click="addFeaturedProduct">确 定</el-button>
-			</span>
-		</el-dialog>
 	</div>
 </template>
 
@@ -466,7 +467,11 @@
 				},
 				featuredProducts: [],
 				featureProductIds: [],
-				featuredProductId: ''
+				featuredProductId: '',
+				floatBtns: {
+					iMessage: '',
+					whatsapp: ''
+				}
 			}
 		},
 		async created () {
@@ -589,9 +594,15 @@
 				this.showFeaturedProdDialog = false
 			},
 			async addFeaturedProduct () {
+				// TODO: faetureproduct
 				this.showFeaturedProdDialog = false
 				const payload = JSON.parse(JSON.stringify(this.pageConfig))
 				payload.faeturedProducts.push(this.featuredProductId)
+				await this.$store.dispatch('page/updatePageConfig', payload)
+			},
+			async updateFloatBtns () {
+				const payload = JSON.parse(JSON.stringify(this.pageConfig))
+				payload.index.floatBtns = this.floatBtns
 				await this.$store.dispatch('page/updatePageConfig', payload)
 			}
 		}
