@@ -27,7 +27,7 @@
 									:show-file-list="false"
 									:on-success="handleCatImgSuccess"
 									:before-upload="beforeImgUpload">
-									<img v-if="categoryObj.img" :src="categoryObj.img" class="avatar">
+									<img v-if="categoryObj.img" :src="categoryObj.img.url" class="avatar">
 									<i v-else class="el-icon-plus category-uploader-icon"></i>
 								</el-upload>
 								<el-form>
@@ -173,7 +173,7 @@
 				return formatters.formatDate({ date: row.createdAt })
 			},
       handleCatImgSuccess(res, file) {
-				this.categoryObj.img = res.data[0]
+				this.categoryObj.img = res.data[0].url
       },
       beforeImgUpload(file) {
         const isJPG = file.type === 'image/jpeg';
